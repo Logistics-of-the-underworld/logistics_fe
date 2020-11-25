@@ -58,7 +58,7 @@ export default {
     async logout() {
       if (this.token) {
         await this.$store.dispatch('user/logout')
-        this.$router.replace(`/`)
+        this.$router.go(0)
       } else {
         this.$router.replace(`/login`)
       }

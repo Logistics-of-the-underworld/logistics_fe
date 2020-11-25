@@ -6,8 +6,8 @@ Vue.use(Router)
 /* Layout */
 import Layout from '@/layout'
 import { vehicleRouter } from '@/router/modules/vehicleRouter'
-import { distributionRouter } from '@/router/modules/distributionRouter'
-import { orderRouter } from '@/router/modules/orderRouter'
+// import { distributionRouter } from '@/router/modules/distributionRouter'
+// import { orderRouter } from '@/router/modules/orderRouter'
 
 /**
  * Note: sub-menu only appear when route children.length >= 1
@@ -168,9 +168,9 @@ export const constantRoutes = [
 ]
 
 export const asyncRoutes = [
-  vehicleRouter,
+  vehicleRouter
   // distributionRouter
-  orderRouter
+  // orderRouter
 ]
 const createRouter = () => new Router({
   // mode: 'history', // require service support
