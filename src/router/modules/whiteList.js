@@ -13,7 +13,8 @@ const whiteList = [
   '/example',
   '/form',
   '/form/index',
-  '/nested'
+  '/nested',
+  '/order/search'
 ] // no redirect whitelist
 
 export default whiteList

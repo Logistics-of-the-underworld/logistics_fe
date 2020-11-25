@@ -7,7 +7,7 @@ Vue.use(Router)
 import Layout from '@/layout'
 import { vehicleRouter } from '@/router/modules/vehicleRouter'
 // import { distributionRouter } from '@/router/modules/distributionRouter'
-// import { orderRouter } from '@/router/modules/orderRouter'
+import { orderRouter } from '@/router/modules/orderRouter'
 
 /**
  * Note: sub-menu only appear when route children.length >= 1
@@ -153,12 +153,16 @@ export const constantRoutes = [
   },
 
   {
-    path: 'external-link',
+    path: '/order',
     component: Layout,
     children: [
       {
-        path: 'https://panjiachen.github.io/vue-element-admin-site/#/',
-        meta: { title: 'External Link', icon: 'link' }
+        path: 'search',
+        component: () => import('@/views/order/order_customer/orderCustomerPage'),
+        meta: {
+          title: '物流查询',
+          icon: 'el-icon-s-order'
+        }
       }
     ]
   },
@@ -168,9 +172,9 @@ export const constantRoutes = [
 ]
 
 export const asyncRoutes = [
-  vehicleRouter
+  vehicleRouter,
   // distributionRouter
-  // orderRouter
+  orderRouter
 ]
 const createRouter = () => new Router({
   // mode: 'history', // require service support

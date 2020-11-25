@@ -5,12 +5,10 @@
 </template>
 
 <script>
-import { login } from '../../api/user'
 
 export default {
   name: 'VehiclePage',
   created() {
-    login().then()
   }
 }
 </script>
