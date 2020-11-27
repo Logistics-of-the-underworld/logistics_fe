@@ -171,10 +171,7 @@ export const constantRoutes = [
         }
       }
     ]
-  },
-
-  // 404 page must be placed at the end !!!
-  { path: '*', redirect: '/404', hidden: true }
+  }
 ]
 
 export const asyncRoutes = [
@@ -185,7 +182,9 @@ export const asyncRoutes = [
   routeRouter,
   reportRouter,
   userRouter,
-  customerRouter
+  customerRouter,
+  // 404 page must be placed at the end !!!
+  { path: '*', redirect: '/404', hidden: true }
 ]
 const createRouter = () => new Router({
   // mode: 'history', // require service support

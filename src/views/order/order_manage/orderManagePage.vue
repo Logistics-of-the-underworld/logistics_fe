@@ -4,7 +4,7 @@
       <el-input v-model="listQuery.title" placeholder="收寄地" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
       <el-input v-model="listQuery.title" placeholder="配送地" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
       <el-input v-model="listQuery.title" placeholder="客户姓名" style="width: 120px;" class="filter-item" @keyup.enter.native="handleFilter" />
-      <el-select v-model="listQuery.type" placeholder="订单状态" clearable class="filter-item" style="width: 130px">
+      <el-select v-model="listQuery.state_order" placeholder="订单状态" clearable class="filter-item" style="width: 130px">
         <el-option v-for="item in orderStateOptions" :key="item.key" :label="item.display_name" :value="item.key" />
       </el-select>
       <el-select v-model="listQuery.timespan" placeholder="查询时段" clearable class="filter-item" style="width: 130px">
@@ -216,7 +216,8 @@ export default {
         title: undefined,
         type: undefined,
         timespan: undefined,
-        sort: '+id'
+        sort: '+id',
+        state_order: ''
       },
       importanceOptions: [1, 2, 3],
       // 三个下拉框选项
@@ -253,7 +254,8 @@ export default {
     }
   },
   created() {
-    this.getList()
+    this.listLoading = false
+    // this.getList()
   },
   methods: {
     getList() {

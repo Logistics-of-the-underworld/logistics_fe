@@ -6,7 +6,8 @@ export const distributionRouter = {
   name: 'distribution',
   meta: {
     title: '配送点',
-    icon: 'component'
+    icon: 'component',
+    roles: ['admin', 'root']
   },
   children: [
     {

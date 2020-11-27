@@ -2,11 +2,11 @@
   <div class="app-container">
     <div class="filter-container">
       <el-input v-model="listQuery.title" placeholder="收寄地" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
-      <el-select v-model="listQuery.importance" placeholder="Imp" clearable style="width: 90px" class="filter-item">
+      <el-select v-model="listQuery.importance" placeholder="用户评价" clearable style="width: 90px" class="filter-item">
         <el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item" />
       </el-select>
-      <el-select v-model="listQuery.type" placeholder="Type" clearable class="filter-item" style="width: 130px">
-        <el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.display_name+'('+item.key+')'" :value="item.key" />
+      <el-select v-model="listQuery.type" placeholder="订单状态" clearable class="filter-item" style="width: 130px">
+        <el-option v-for="item in orderStateTypeOptions" :key="item.key" :label="item.display_name+'('+item.key+')'" :value="item.key" />
       </el-select>
       <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
         <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key" />
@@ -32,66 +32,58 @@
       border
       fit
       highlight-current-row
-      style="width: 100%;"
+      style="width: 1211px;"
       @sort-change="sortChange"
     >
-      <el-table-column label="ID" prop="id" sortable="custom" align="center" width="80" :class-name="getSortClass('id')">
+      <el-table-column label="订单编号" prop="id_order" sortable="custom" align="center" width="80" :class-name="getSortClass('id')">
         <template slot-scope="{row}">
-          <span>{{ row.id }}</span>
+          <span>{{ row.id_order }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="Date" width="150px" align="center">
+      <el-table-column label="下单时间" width="150px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.timestamp | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+          <span>{{ row.create_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="Title" min-width="150px">
+      <el-table-column label="配送点名称" width="110px" align="center">
         <template slot-scope="{row}">
-          <span class="link-type" @click="handleUpdate(row)">{{ row.title }}</span>
-          <el-tag>{{ row.type | typeFilter }}</el-tag>
+          <span>{{ row.name_distribution }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="Author" width="110px" align="center">
+      <el-table-column label="寄件人姓名" width="110px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.author }}</span>
+          <span>{{ row.sender_name }}</span>
         </template>
       </el-table-column>
-      <el-table-column v-if="showReviewer" label="Reviewer" width="110px" align="center">
+      <el-table-column label="收件人姓名" width="110px" align="center">
         <template slot-scope="{row}">
-          <span style="color:red;">{{ row.reviewer }}</span>
+          <span>{{ row.receiver_name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="Imp" width="80px">
+      <el-table-column label="配送价格" width="110px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.delivery_price }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="评价" width="80px">
         <template slot-scope="{row}">
           <svg-icon v-for="n in + row.importance" :key="n" icon-class="star" class="meta-item__icon" />
         </template>
       </el-table-column>
-      <el-table-column label="Readings" align="center" width="95">
+      <el-table-column label="订单状态" align="center" width="95">
         <template slot-scope="{row}">
-          <span v-if="row.pageviews" class="link-type" @click="handleFetchPv(row.pageviews)">{{ row.pageviews }}</span>
-          <span v-else>0</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="Status" class-name="status-col" width="100">
-        <template slot-scope="{row}">
-          <el-tag :type="row.status | statusFilter">
-            {{ row.status }}
+          <el-tag :type="row.state_order | statusFilter">
+            {{ row.state_order }}
           </el-tag>
         </template>
       </el-table-column>
       <el-table-column label="Actions" align="center" width="230" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
           <el-button type="primary" size="mini" @click="handleUpdate(row)">
-            Edit
-          </el-button>
-          <el-button v-if="row.status!='published'" size="mini" type="success" @click="handleModifyStatus(row,'published')">
-            Publish
-          </el-button>
-          <el-button v-if="row.status!='draft'" size="mini" @click="handleModifyStatus(row,'draft')">
-            Draft
+            查看
           </el-button>
           <el-button v-if="row.status!='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
-            Delete
+            取消订单
           </el-button>
         </template>
       </el-table-column>
@@ -101,35 +93,58 @@
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
-        <el-form-item label="Type" prop="type">
-          <el-select v-model="temp.type" class="filter-item" placeholder="Please select">
-            <el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" />
-          </el-select>
+        <el-form-item label="订单编号" prop="id_order">
+          <el-input v-model="temp.id_order" />
         </el-form-item>
-        <el-form-item label="Date" prop="timestamp">
-          <el-date-picker v-model="temp.timestamp" type="datetime" placeholder="Please pick a date" />
+        <el-form-item label="下单时间" prop="create_time">
+          <el-date-picker v-model="temp.create_time" type="datetime" placeholder="Please pick a date" disabled />
         </el-form-item>
-        <el-form-item label="Title" prop="title">
-          <el-input v-model="temp.title" />
+        <el-form-item label="配送时间" prop="delivery_time">
+          <el-input v-model="temp.delivery_time" />
         </el-form-item>
-        <el-form-item label="Status">
-          <el-select v-model="temp.status" class="filter-item" placeholder="Please select">
-            <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />
-          </el-select>
+        <el-form-item label="配送点名称" prop="name_distribution">
+          <el-input v-model="temp.name_distribution" />
         </el-form-item>
-        <el-form-item label="Imp">
+        <el-form-item label="条形码" prop="bar_code_url">
+          <el-input v-model="temp.bar_code_url" />
+        </el-form-item>
+        <el-form-item label="寄件人姓名" prop="sender_name">
+          <el-input v-model="temp.sender_name" disabled />
+        </el-form-item>
+        <el-form-item label="寄件人电话" prop="sender_phone">
+          <el-input v-model="temp.sender_phone" disabled />
+        </el-form-item>
+        <el-form-item label="收件人姓名" prop="receiver_name">
+          <el-input v-model="temp.receiver_name" />
+        </el-form-item>
+        <el-form-item label="收件人电话" prop="receiver_phone">
+          <el-input v-model="temp.receiver_phone" />
+        </el-form-item>
+        <el-form-item label="配送车辆" prop="id_license">
+          <el-input v-model="temp.id_license" />
+        </el-form-item>
+        <el-form-item label="订单状态" prop="state_order">
+          <el-input v-model="temp.state_order" />
+        </el-form-item>
+        <el-form-item label="配送人" prop="courier">
+          <el-input v-model="temp.courier" />
+        </el-form-item>
+        <el-form-item label="配送人电话" prop="courier_phone">
+          <el-input v-model="temp.courier_phone" />
+        </el-form-item>
+        <el-form-item label="用户评价">
           <el-rate v-model="temp.importance" :colors="['#99A9BF', '#F7BA2A', '#FF9900']" :max="3" style="margin-top:8px;" />
         </el-form-item>
-        <el-form-item label="Remark">
-          <el-input v-model="temp.remark" :autosize="{ minRows: 2, maxRows: 4}" type="textarea" placeholder="Please input" />
+        <el-form-item label="备注">
+          <el-input v-model="temp.marks" :autosize="{ minRows: 2, maxRows: 4}" type="textarea" placeholder="Please input" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">
-          Cancel
+          取消
         </el-button>
         <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
-          Confirm
+          保存
         </el-button>
       </div>
     </el-dialog>
@@ -147,24 +162,37 @@
 </template>
 
 <script>
-import { fetchList, fetchPv, createArticle, updateArticle } from '@/api/article'
+import { fetchPv, createArticle, updateArticle } from '@/api/article'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 
-const calendarTypeOptions = [
-  { key: 'CN', display_name: 'China' },
-  { key: 'US', display_name: 'USA' },
-  { key: 'JP', display_name: 'Japan' },
-  { key: 'EU', display_name: 'Eurozone' }
-]
+const orderTest = {
+  items: [
+    {
+      id_order: 'zxc123456', name_distribution: '灵力药房', bar_code_url: '/asdkjhajkfasf.jpg', state_order: 6,
+      sender_name: '我急了', sender_phone: 15023421665, receiver_name: '我装的', receiver_phone: '110',
+      delivery_price: '18.00', insurance_fee: '0.00', delivery_time: '2020-11-27 16:04', id_license: '渝AE86',
+      courier: '陈快递', courier_phone: '12580', marks: '这里是备注', create_time: '1998-08-01 07:42', importance: 3
+    }
+  ],
+  total: 1
+}
 
-// arr to obj, such as { CN : "China", US : "USA" }
-const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
+const orderStateTypeOptions = [
+  { key: 0, display_name: '未处理' },
+  { key: 1, display_name: '审核通过' },
+  { key: 2, display_name: '在途中' },
+  { key: 3, display_name: '在配送中' },
+  { key: 4, display_name: '已签收' },
+  { key: 5, display_name: '等待支付' },
+  { key: 6, display_name: '已完成' },
+  { key: 7, display_name: '退订' }
+]
+const orderStateTypeKeyValue = orderStateTypeOptions.reduce((acc, cur) => {
   acc[cur.key] = cur.display_name
   return acc
 }, {})
-
 export default {
   name: 'ComplexTable',
   components: { Pagination },
@@ -172,14 +200,16 @@ export default {
   filters: {
     statusFilter(status) {
       const statusMap = {
-        published: 'success',
-        draft: 'info',
-        deleted: 'danger'
+        '未处理': 'info',
+        '审核通过': 'success',
+        '在途中': 'success',
+        '在配送中': 'success',
+        '已签收': 'success',
+        '等待支付': 'success',
+        '已完成': 'success',
+        '退订': 'danger'
       }
       return statusMap[status]
-    },
-    typeFilter(type) {
-      return calendarTypeKeyValue[type]
     }
   },
   data() {
@@ -188,6 +218,7 @@ export default {
       list: null,
       total: 0,
       listLoading: true,
+      orderStateTypeOptions,
       listQuery: {
         page: 1,
         limit: 20,
@@ -197,18 +228,26 @@ export default {
         sort: '+id'
       },
       importanceOptions: [1, 2, 3],
-      calendarTypeOptions,
       sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
       statusOptions: ['published', 'draft', 'deleted'],
       showReviewer: false,
       temp: {
-        id: undefined,
+        id_order: undefined,
+        name_distribution: '',
+        bar_code_url: undefined,
         importance: 1,
-        remark: '',
+        sender_name: '',
+        sender_phone: undefined,
+        receiver_name: '',
+        receiver_phone: undefined,
+        create_time: undefined,
         timestamp: new Date(),
-        title: '',
-        type: '',
-        status: 'published'
+        delivery_time: undefined,
+        id_license: undefined,
+        state_order: undefined,
+        courier: '',
+        courier_phone: undefined,
+        marks: ''
       },
       dialogFormVisible: false,
       dialogStatus: '',
@@ -219,29 +258,30 @@ export default {
       dialogPvVisible: false,
       pvData: [],
       rules: {
-        type: [{ required: true, message: 'type is required', trigger: 'change' }],
+        id_license: [{ required: true, message: 'id_license is required', trigger: 'change' }],
         timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],
-        title: [{ required: true, message: 'title is required', trigger: 'blur' }]
+        receiver_name: [{ required: true, message: 'receiver_name is required', trigger: 'blur' }],
+        receiver_phone: [{ required: true, message: 'receiver_phone is required', trigger: 'blur' }]
       },
       downloadLoading: false
     }
   },
   created() {
-    // this.getList()
-    this.listLoading = false
+    this.getList()
   },
   methods: {
-    getList() {
+    async getList() {
       this.listLoading = true
-      fetchList(this.listQuery).then(response => {
-        this.list = response.data.items
-        this.total = response.data.total
-
-        // Just to simulate the time of the request
-        setTimeout(() => {
-          this.listLoading = false
-        }, 1.5 * 1000)
+      const data = orderTest
+      const items = data.items
+      this.total = data.total
+      this.list = items.map(v => {
+        v.state_order = orderStateTypeKeyValue[v.state_order]
+        return v
       })
+      this.listLoading = false
+      console.log(this.list)
+      console.log(this.listQuery.importance)
     },
     handleFilter() {
       this.listQuery.page = 1
@@ -270,13 +310,22 @@ export default {
     },
     resetTemp() {
       this.temp = {
-        id: undefined,
+        id_order: undefined,
+        name_distribution: '',
+        bar_code_url: undefined,
         importance: 1,
-        remark: '',
+        sender_name: '',
+        sender_phone: undefined,
+        receiver_name: '',
+        receiver_phone: undefined,
+        create_time: undefined,
         timestamp: new Date(),
-        title: '',
-        status: 'published',
-        type: ''
+        delivery_time: undefined,
+        id_license: undefined,
+        state_order: undefined,
+        courier: '',
+        courier_phone: undefined,
+        marks: ''
       }
     },
     handleCreate() {

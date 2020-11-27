@@ -19,8 +19,7 @@
         Export
       </el-button>
     </div>
-
-    <el-table v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%">
+    <el-table v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 1011px;">
       <el-table-column align="center" label="车牌号" width="80px">
         <template slot-scope="{row}">
           <span>{{ row.id_license }}</span>
@@ -47,17 +46,17 @@
 
       <el-table-column width="120px" align="center" label="限载">
         <template slot-scope="{row}">
-          <span>{{ row.limit_kilogram }}</span>
+          <span>{{ row.limit_kilogram }}kg</span>
         </template>
       </el-table-column>
 
       <el-table-column width="120px" align="center" label="限容">
         <template slot-scope="{row}">
-          <span>{{ row.limit_volume }}</span>
+          <span>{{ row.limit_volume }}m³</span>
         </template>
       </el-table-column>
 
-      <el-table-column class-name="status-col" label="车辆状态" width="110">
+      <el-table-column class-name="status-col" label="车辆状态" width="110px">
         <template slot-scope="{row}">
           <el-tag :type="row.state | statusFilter">
             {{ row.state }}
@@ -65,7 +64,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="Actions" width="240">
+      <el-table-column align="center" label="Actions" width="160px">
         <template slot-scope="{row,$index}">
           <el-button type="primary" size="mini" @click="handleUpdate(row)">
             编辑
@@ -216,6 +215,7 @@ export default {
         return v
       })
       this.listLoading = false
+      console.log(this.list)
     },
     handleCreate() {
       this.resetTemp()
@@ -309,12 +309,4 @@ export default {
 </script>
 
 <style scoped>
-  .edit-input {
-    padding-right: 100px;
-  }
-  .cancel-btn {
-    position: absolute;
-    right: 15px;
-    top: 10px;
-  }
 </style>
