@@ -8,6 +8,7 @@ import Layout from '@/layout'
 import { vehicleRouter } from '@/router/modules/vehicleRouter'
 // import { distributionRouter } from '@/router/modules/distributionRouter'
 import { orderRouter } from '@/router/modules/orderRouter'
+import { routeRouter } from '@/router/modules/routeRouter'
 
 /**
  * Note: sub-menu only appear when route children.length >= 1
@@ -174,7 +175,8 @@ export const constantRoutes = [
 export const asyncRoutes = [
   vehicleRouter,
   // distributionRouter
-  orderRouter
+  orderRouter,
+  routeRouter
 ]
 const createRouter = () => new Router({
   // mode: 'history', // require service support
