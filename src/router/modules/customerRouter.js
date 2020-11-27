@@ -1,6 +1,6 @@
 import Layout from '@/layout/index'
 export const customerRouter = {
-  path: '/user',
+  path: '/customer',
   component: Layout,
   children: [
     {

@@ -227,7 +227,8 @@ export default {
     }
   },
   created() {
-    this.getList()
+    // this.getList()
+    this.listLoading = false
   },
   methods: {
     getList() {
