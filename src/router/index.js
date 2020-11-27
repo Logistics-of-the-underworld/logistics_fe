@@ -9,6 +9,11 @@ import { vehicleRouter } from '@/router/modules/vehicleRouter'
 // import { distributionRouter } from '@/router/modules/distributionRouter'
 import { orderRouter } from '@/router/modules/orderRouter'
 import { routeRouter } from '@/router/modules/routeRouter'
+import { userRouter } from '@/router/modules/userRouter'
+import { customerRouter } from '@/router/modules/customerRouter'
+import { distributionRouter } from '@/router/modules/distributionRouter'
+import { handoverRouter } from '@/router/modules/handoverRouter'
+import { reportRouter } from '@/router/modules/reportRouter'
 
 /**
  * Note: sub-menu only appear when route children.length >= 1
@@ -174,9 +179,13 @@ export const constantRoutes = [
 
 export const asyncRoutes = [
   vehicleRouter,
-  // distributionRouter
+  distributionRouter,
   orderRouter,
-  routeRouter
+  handoverRouter,
+  routeRouter,
+  reportRouter,
+  userRouter,
+  customerRouter
 ]
 const createRouter = () => new Router({
   // mode: 'history', // require service support
