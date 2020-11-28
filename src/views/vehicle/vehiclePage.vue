@@ -6,7 +6,7 @@
       <el-input label="Date" prop="timestamp" style="width: 130px;margin-right:12px" placeholder="请选择购置时间">
         <el-date-picker v-model="listQuery.timestamp" type="datetime" />
       </el-input>
-      <el-select v-model="listQuery.state" placeholder="车辆状态" clearable class="filter-item" style="width: 130px">
+      <el-select v-model="listQuery.state" placeholder="车辆状态" clearable class="filter-item" style="width: 130px;margin-right:12px">
         <el-option v-for="item in vehicleStateTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" />
       </el-select>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
