@@ -1,14 +1,14 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input v-model="listQuery.title" placeholder="收寄地" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
-      <el-select v-model="listQuery.importance" placeholder="用户评价" clearable style="width: 90px" class="filter-item">
+      <el-input v-model="listQuery.title" placeholder="收寄地" style="width: 200px;margin-right:12px" class="filter-item" @keyup.enter.native="handleFilter" />
+      <el-select v-model="listQuery.importance" placeholder="用户评价" clearable style="width: 120px;margin-right:12px" class="filter-item">
         <el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item" />
       </el-select>
-      <el-select v-model="listQuery.type" placeholder="订单状态" clearable class="filter-item" style="width: 130px">
+      <el-select v-model="listQuery.type" placeholder="订单状态" clearable class="filter-item" style="width: 130px;margin-right:12px">
         <el-option v-for="item in orderStateTypeOptions" :key="item.key" :label="item.display_name+'('+item.key+')'" :value="item.key" />
       </el-select>
-      <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
+      <el-select v-model="listQuery.sort" style="width: 140px;margin-right:12px" class="filter-item" @change="handleFilter">
         <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key" />
       </el-select>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
@@ -20,75 +20,80 @@
       <el-button v-waves :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">
         Export
       </el-button>
-      <el-checkbox v-model="showReviewer" class="filter-item" style="margin-left:15px;" @change="tableKey=tableKey+1">
+      <el-checkbox v-model="showReviewer" class="filter-item" style="margin-left:15px;margin-right:12px" @change="tableKey=tableKey+1">
         reviewer
       </el-checkbox>
     </div>
-
-    <el-table
-      :key="tableKey"
-      v-loading="listLoading"
-      :data="list"
-      border
-      fit
-      highlight-current-row
-      style="width: 1211px;"
-      @sort-change="sortChange"
-    >
-      <el-table-column label="订单编号" prop="id_order" sortable="custom" align="center" width="80" :class-name="getSortClass('id')">
-        <template slot-scope="{row}">
-          <span>{{ row.id_order }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="下单时间" width="150px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.create_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="配送点名称" width="110px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.name_distribution }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="寄件人姓名" width="110px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.sender_name }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="收件人姓名" width="110px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.receiver_name }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="配送价格" width="110px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.delivery_price }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="评价" width="80px">
-        <template slot-scope="{row}">
-          <svg-icon v-for="n in + row.importance" :key="n" icon-class="star" class="meta-item__icon" />
-        </template>
-      </el-table-column>
-      <el-table-column label="订单状态" align="center" width="95">
-        <template slot-scope="{row}">
-          <el-tag :type="row.state_order | statusFilter">
-            {{ row.state_order }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="Actions" align="center" width="230" class-name="small-padding fixed-width">
-        <template slot-scope="{row,$index}">
-          <el-button type="primary" size="mini" @click="handleUpdate(row)">
-            查看
-          </el-button>
-          <el-button v-if="row.status!='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
-            取消订单
-          </el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-
+    <div class="table-list-main">
+      <el-table
+        :key="tableKey"
+        v-loading="listLoading"
+        :data="list"
+        border
+        fit
+        highlight-current-row
+        style="width: 100%;"
+        @sort-change="sortChange"
+      >
+        <el-table-column label="订单编号" prop="id_order" sortable="custom" align="center" width="80" :class-name="getSortClass('id')">
+          <template slot-scope="{row}">
+            <span>{{ row.id_order }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="下单时间" width="150px" align="center">
+          <template slot-scope="{row}">
+            <span>{{ row.create_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="配送点名称" width="110px" align="center">
+          <template slot-scope="{row}">
+            <span>{{ row.name_distribution }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="寄件人姓名" width="110px" align="center">
+          <template slot-scope="{row}">
+            <span>{{ row.sender_name }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="收件人姓名" width="110px" align="center">
+          <template slot-scope="{row}">
+            <span>{{ row.receiver_name }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="配送价格" width="110px" align="center">
+          <template slot-scope="{row}">
+            <span>{{ row.delivery_price }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="评价" width="80px">
+          <template slot-scope="{row}">
+            <svg-icon v-for="n in + row.importance" :key="n" icon-class="star" class="meta-item__icon" />
+          </template>
+        </el-table-column>
+        <el-table-column label="订单状态" align="center" width="95">
+          <template slot-scope="{row}">
+            <el-tag :type="row.state_order | statusFilter">
+              {{ row.state_order }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column v-if="showReviewer" label="Reviewer" width="110px" align="center">
+          <template slot-scope="{row}">
+            <span style="color:red;">{{ row.reviewer }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="Actions" align="center" width="230" class-name="small-padding fixed-width">
+          <template slot-scope="{row,$index}">
+            <el-button type="primary" size="mini" @click="handleUpdate(row)">
+              查看
+            </el-button>
+            <el-button v-if="row.status!='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
+              取消订单
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
@@ -173,7 +178,8 @@ const orderTest = {
       id_order: 'zxc123456', name_distribution: '灵力药房', bar_code_url: '/asdkjhajkfasf.jpg', state_order: 6,
       sender_name: '我急了', sender_phone: 15023421665, receiver_name: '我装的', receiver_phone: '110',
       delivery_price: '18.00', insurance_fee: '0.00', delivery_time: '2020-11-27 16:04', id_license: '渝AE86',
-      courier: '陈快递', courier_phone: '12580', marks: '这里是备注', create_time: '1998-08-01 07:42', importance: 3
+      courier: '陈快递', courier_phone: '12580', marks: '这里是备注', create_time: '1998-08-01 07:42', importance: 3,
+      reviewer: '熊洪伟'
     }
   ],
   total: 1
@@ -427,3 +433,8 @@ export default {
   }
 }
 </script>
+<style scoped>
+  .table-list-main {
+    width: auto;
+  }
+</style>
