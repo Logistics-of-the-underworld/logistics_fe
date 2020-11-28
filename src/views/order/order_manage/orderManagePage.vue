@@ -61,36 +61,6 @@
           </el-tag>
         </template>
       </el-table-column>
-      <!-- <el-table-column width="120px" align="center" label="条形码">
-        <template slot-scope="{row}">
-          <span>{{ row.bar_code_url }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column width="120px" align="center" label="寄件人姓名">
-        <template slot-scope="{row}">
-          <span>{{ row.sender_name }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column width="120px" align="center" label="收件人姓名">
-        <template slot-scope="{row}">
-          <span>{{ row.receiver_name }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column width="120px" align="center" label="配送价格">
-        <template slot-scope="{row}">
-          <span>{{ row.delivery_price }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column width="120px" align="center" label="配送车辆">
-        <template slot-scope="{row}">
-          <span>{{ row.id_license }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column width="120px" align="center" label="支付方式">
-        <template slot-scope="{row}">
-          <span>{{ row.payment_method }}</span>
-        </template>
-      </el-table-column> -->
       <el-table-column label="用户评价" width="80px">
         <template slot-scope="{row}">
           <svg-icon v-for="n in + row.importance" :key="n" icon-class="star" class="meta-item__icon" />
@@ -99,7 +69,7 @@
       <el-table-column label="操作" align="center" width="230" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
           <el-button type="primary" size="mini" @click="handleUpdate(row)">
-            编辑
+            查看
           </el-button>
           <el-button v-if="row.status!='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
             删除
