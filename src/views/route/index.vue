@@ -21,13 +21,11 @@ export default {
   },
   methods: {
     handleClick(activeName, oldActiveName) {
-      console.log(activeName, oldActiveName)
       if (activeName === '0') {
         this.visible = true
       } else {
         this.visible = false
       }
-      console.log(this.visible)
     }
   }
 }

@@ -10,13 +10,13 @@
         <el-option v-for="item in vehicleStateTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" />
       </el-select>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
-        Search
+        查询
       </el-button>
       <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
-        Add
+        新建
       </el-button>
       <el-button v-waves :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">
-        Export
+        导出
       </el-button>
     </div>
     <el-table v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 1011px;">
@@ -232,13 +232,17 @@ export default {
       })
     },
     handleDelete(row, index) {
-      this.$notify({
-        title: 'Success',
-        message: 'Delete Successfully',
-        type: 'success',
-        duration: 2000
+      this.deleteData(row).then(res => {
+        if (res.code === 20000) {
+          this.$notify({
+            title: 'Success',
+            message: 'Delete Successfully',
+            type: 'success',
+            duration: 2000
+          })
+          this.list.splice(index, 1)
+        }
       })
-      this.list.splice(index, 1)
     },
     deleteData(row) {
       return deleteTruck(row)
@@ -306,6 +310,18 @@ export default {
     getSortClass: function(key) {
       const sort = this.listQuery.sort
       return sort === `+${key}` ? 'ascending' : 'descending'
+    },
+    resetTemp() {
+      this.temp = {
+        id_license: undefined,
+        create_time: undefined,
+        driver_name: '',
+        timestamp: new Date(),
+        limit_volume: undefined,
+        limit_kilogram: undefined,
+        type: '',
+        status: undefined
+      }
     }
   }
 }
