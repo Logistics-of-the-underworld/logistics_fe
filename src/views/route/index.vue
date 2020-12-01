@@ -1,18 +1,18 @@
 <template>
   <el-tabs type="border-card" :before-leave="handleClick">
-    <el-tab-pane label="物流查询"><order-customer-page v-if="visible"/></el-tab-pane>
-    <el-tab-pane label="地图显示"><camap v-if="!visible"/></el-tab-pane>
+    <el-tab-pane label="物流查询"><views-page v-if="visible" /></el-tab-pane>
+    <el-tab-pane label="地图显示"><route-page v-if="!visible" /></el-tab-pane>
   </el-tabs>
 </template>
 
 <script>
-import orderCustomerPage from './orderCustomerPage'
-import camap from './camap'
+import routePage from './routePage'
+import viewsPage from './viewsPage'
 export default {
-  name: 'OrderIndex',
+  name: 'IndexManage',
   components: {
-    orderCustomerPage,
-    camap
+    routePage,
+    viewsPage
   },
   data() {
     return {

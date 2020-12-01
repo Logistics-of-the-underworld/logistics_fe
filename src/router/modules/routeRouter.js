@@ -4,9 +4,9 @@ export const routeRouter = {
   component: Layout,
   children: [
     {
-      path: 'search',
-      name: 'route',
-      component: () => import('@/views/route/routePage'),
+      path: 'manage',
+      name: 'IndexManage',
+      component: () => import('@/views/route/index'),
       meta: {
         // 如果需要权限才能进入这个路由的话 就加这个
         roles: ['admin', 'root'],

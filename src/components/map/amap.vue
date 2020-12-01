@@ -91,7 +91,7 @@ export default {
         citylimit: true
       },
       center: [121.5273285, 31.21515044],
-      zoom: 6,
+      zoom: 5,
       lng: 0,
       lat: 0,
       loaded: false,
@@ -154,7 +154,7 @@ export default {
               })
               setTimeout(() => {
                 self.initRoute()
-              }, 500)
+              }, 800)
             }
           }
         },
@@ -291,7 +291,6 @@ export default {
         }
         this.center = [center.lng, center.lat]
       }
-      console.log(this.markers)
     },
     initRoute() {
       const vm = this
