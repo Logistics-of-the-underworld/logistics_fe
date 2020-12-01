@@ -32,10 +32,10 @@
         border
         fit
         highlight-current-row
-        style="width: 100%;"
+        style="width: 100%"
         @sort-change="sortChange"
       >
-        <el-table-column label="订单编号" prop="id_order" sortable="custom" align="center" width="80" :class-name="getSortClass('id')">
+        <el-table-column label="订单编号" prop="id_order" sortable="custom" align="center" width="180" :class-name="getSortClass('id')">
           <template slot-scope="{row}">
             <span>{{ row.id_order }}</span>
           </template>
@@ -45,7 +45,7 @@
             <span>{{ row.create_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="配送点名称" width="110px" align="center">
+        <el-table-column label="配送点名称" width="150px" align="center">
           <template slot-scope="{row}">
             <span>{{ row.name_distribution }}</span>
           </template>
@@ -65,7 +65,7 @@
             <span>{{ row.delivery_price }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="评价" width="80px">
+        <el-table-column label="评价" width="110px">
           <template slot-scope="{row}">
             <svg-icon v-for="n in + row.importance" :key="n" icon-class="star" class="meta-item__icon" />
           </template>
@@ -82,7 +82,7 @@
             <span style="color:red;">{{ row.reviewer }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="Actions" align="center" width="230" class-name="small-padding fixed-width">
+        <el-table-column label="操作" align="center" width="200" class-name="small-padding fixed-width">
           <template slot-scope="{row,$index}">
             <el-button type="primary" size="mini" @click="handleUpdate(row)">
               查看
@@ -167,11 +167,11 @@
 </template>
 
 <script>
-import { fetchPv, createArticle, updateArticle } from '@/api/article'
+import { fetchPv, updateArticle } from '@/api/article'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-
+import { fetchList, createOrder, updateOrder, deleteOrder } from '@/api/order'
 const orderTest = {
   items: [
     {
@@ -279,15 +279,18 @@ export default {
     async getList() {
       console.log(this.listQuery)
       this.listLoading = true
-      const data = orderTest
-      const items = data.items
-      this.total = data.total
-      this.list = items.map(v => {
-        v.state_order = orderStateTypeKeyValue[v.state_order]
-        return v
+      await fetchList(this.listQuery).then(res => {
+        const items = res.data.items
+        this.total = res.data.total
+        this.list = items.map(v => {
+          v.state_order = orderStateTypeKeyValue[v.state_order]
+          return v
+        }).catch(err => {
+          console.log(err)
+        })
+        this.listLoading = false
+        console.log(this.listQuery.importance)
       })
-      this.listLoading = false
-      console.log(this.listQuery.importance)
     },
     handleFilter() {
       this.listQuery.page = 1
@@ -347,7 +350,7 @@ export default {
         if (valid) {
           this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
           this.temp.author = 'vue-element-admin'
-          createArticle(this.temp).then(() => {
+          createOrder(this.temp).then(() => {
             this.list.unshift(this.temp)
             this.dialogFormVisible = false
             this.$notify({
@@ -389,13 +392,20 @@ export default {
       })
     },
     handleDelete(row, index) {
-      this.$notify({
-        title: 'Success',
-        message: 'Delete Successfully',
-        type: 'success',
-        duration: 2000
+      this.deleteData(row).then(res => {
+        if (res.code === 20000) {
+          this.$notify({
+            title: 'Success',
+            message: 'Delete Successfully',
+            type: 'success',
+            duration: 2000
+          })
+          this.list.splice(index, 1)
+        }
       })
-      this.list.splice(index, 1)
+    },
+    deleteData(row) {
+      return deleteOrder(row)
     },
     handleFetchPv(pv) {
       fetchPv(pv).then(response => {
@@ -434,7 +444,4 @@ export default {
 }
 </script>
 <style scoped>
-  .table-list-main {
-    width: auto;
-  }
 </style>

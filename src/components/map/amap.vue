@@ -100,7 +100,7 @@ export default {
           lazyAMapApiLoaderInstance.load().then(() => {
             // self.initSearch()
           })
-        },
+        }
         // 点击获取地址的数据
         // click(e) {
         //   const { lng, lat } = e.lnglat

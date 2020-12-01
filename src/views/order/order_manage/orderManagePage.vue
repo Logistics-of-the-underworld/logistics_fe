@@ -83,9 +83,7 @@
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="100px" style="width: 400px; margin-left:50px;">
         <el-form-item label="订单号" prop="id_order">
-          <el-select v-model="temp.id_order" class="filter-item" placeholder="Please select">
-            <el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" />
-          </el-select>
+          <el-input v-model="temp.id_order" disabled/>
         </el-form-item>
         <el-form-item label="下单日期" prop="create_time">
           <el-date-picker v-model="temp.create_time" type="datetime" placeholder="Please pick a date" />
@@ -151,8 +149,8 @@ import Pagination from '@/components/Pagination' // secondary package based on e
 const dataTest = { // eslint-disable-line no-unused-vars
   items: [
     {
-      id: '007', create_time: '1998-08-01 07:42', id_order: '0909709099', state_order: '未处理', importance: '2', bar_code_url: '121212111', sender_name: 'lily',
-      receiver_name: 'tom', delivery_price: '200', id_license: '111111', payment_method: '微信', marks: '感觉还可以'
+      id: '007', create_time: '1998-08-01 07:42', id_order: '0909709099', state_order: '未处理', importance: 2, bar_code_url: '121212111', sender_name: 'lily',
+      receiver_name: 'tom', delivery_price: 200, id_license: '111111', payment_method: '微信', marks: '感觉还可以'
     }
   ],
   total: 1
@@ -190,9 +188,14 @@ export default {
   filters: {
     statusFilter(status) {
       const statusMap = {
-        published: 'success',
-        draft: 'info',
-        deleted: 'danger'
+        '未处理': 'info',
+        '审核通过': 'success',
+        '在途中': 'success',
+        '在配送中': 'success',
+        '已签收': 'success',
+        '等待支付': 'success',
+        '已完成': 'success',
+        '退订': 'danger'
       }
       return statusMap[status]
     }

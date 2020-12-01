@@ -134,7 +134,7 @@ export default {
   methods: {
     searchRoute({ result, index }) {
       let flag = false
-      let temp = {
+      const temp = {
         path: [
         ]
       }
