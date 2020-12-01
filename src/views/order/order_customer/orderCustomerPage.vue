@@ -200,7 +200,7 @@ const orderStateTypeKeyValue = orderStateTypeOptions.reduce((acc, cur) => {
   return acc
 }, {})
 export default {
-  name: 'ComplexTable',
+  name: 'OrderView',
   components: { Pagination },
   directives: { waves },
   filters: {

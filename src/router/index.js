@@ -161,10 +161,12 @@ export const constantRoutes = [
   {
     path: '/order',
     component: Layout,
+    name: 'order',
     children: [
       {
         path: 'search',
-        component: () => import('@/views/order/order_customer/orderCustomerPage'),
+        name: 'OrderIndex',
+        component: () => import('@/views/order/order_customer/index'),
         meta: {
           title: '物流查询',
           icon: 'el-icon-s-order'

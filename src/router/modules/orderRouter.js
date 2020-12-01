@@ -5,7 +5,7 @@ export const orderRouter = {
   children: [
     {
       path: 'search',
-      name: 'vehicle',
+      name: 'orderManage',
       component: () => import('@/views/order/order_manage/orderManagePage'),
       meta: {
         // 如果需要权限才能进入这个路由的话 就加这个
