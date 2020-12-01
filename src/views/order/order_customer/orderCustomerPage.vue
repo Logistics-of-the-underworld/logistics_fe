@@ -167,12 +167,12 @@
 </template>
 
 <script>
-import { fetchPv, updateArticle } from '@/api/article'
+import { fetchPv } from '@/api/article'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import { fetchList, createOrder, updateOrder, deleteOrder } from '@/api/order'
-const orderTest = {
+const orderTest = { // eslint-disable-line no-unused-vars
   items: [
     {
       id_order: 'zxc123456', name_distribution: '灵力药房', bar_code_url: '/asdkjhajkfasf.jpg', state_order: 6,
@@ -377,7 +377,7 @@ export default {
         if (valid) {
           const tempData = Object.assign({}, this.temp)
           tempData.timestamp = +new Date(tempData.timestamp) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
-          updateArticle(tempData).then(() => {
+          updateOrder(tempData).then(() => {
             const index = this.list.findIndex(v => v.id === this.temp.id)
             this.list.splice(index, 1, this.temp)
             this.dialogFormVisible = false

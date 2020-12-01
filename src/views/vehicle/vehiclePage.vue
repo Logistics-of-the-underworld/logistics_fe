@@ -119,7 +119,7 @@
 import { parseTime } from '@/utils'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-
+import { addTruck, deleteTruck, updateTruck } from '@/api/vehicle'
 const dataTest = {
   items: [
     {
@@ -129,7 +129,6 @@ const dataTest = {
   ],
   total: 1
 }
-
 const vehicleStateTypeOptions = [
   { key: 0, display_name: '空闲' },
   { key: 1, display_name: '繁忙' },
@@ -139,7 +138,6 @@ const vehicleStateTypeKeyValue = vehicleStateTypeOptions.reduce((acc, cur) => {
   acc[cur.key] = cur.display_name
   return acc
 }, {})
-
 export default {
   name: 'VehiclePage',
   components: { Pagination },
@@ -242,21 +240,24 @@ export default {
       })
       this.list.splice(index, 1)
     },
+    deleteData(row) {
+      return deleteTruck(row)
+    },
     createData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
           this.temp.author = 'vue-element-admin'
-          // createArticle(this.temp).then(() => {
-          //   this.list.unshift(this.temp)
-          //   this.dialogFormVisible = false
-          //   this.$notify({
-          //     title: 'Success',
-          //     message: 'Created Successfully',
-          //     type: 'success',
-          //     duration: 2000
-          //   })
-          // })
+          addTruck(this.temp).then(res => {
+            this.list.unshift(this.temp)
+            this.dialogFormVisible = false
+            this.$notify({
+              title: 'Success',
+              message: 'Created Successfully',
+              type: 'success',
+              duration: 2000
+            })
+          })
         }
       })
     },
@@ -265,14 +266,16 @@ export default {
         if (valid) {
           const tempData = Object.assign({}, this.temp)
           tempData.timestamp = +new Date(tempData.timestamp) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
-          const index = this.list.findIndex(v => v.id_license === this.temp.id_license)
-          this.list.splice(index, 1, this.temp)
-          this.dialogFormVisible = false
-          this.$notify({
-            title: 'Success',
-            message: 'Update Successfully',
-            type: 'success',
-            duration: 2000
+          updateTruck(tempData).then(() => {
+            const index = this.list.findIndex(v => v.id_license === this.temp.id_license)
+            this.list.splice(index, 1, this.temp)
+            this.dialogFormVisible = false
+            this.$notify({
+              title: 'Success',
+              message: 'Update Successfully',
+              type: 'success',
+              duration: 2000
+            })
           })
         }
       })

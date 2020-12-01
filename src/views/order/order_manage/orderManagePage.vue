@@ -83,7 +83,7 @@
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="100px" style="width: 400px; margin-left:50px;">
         <el-form-item label="订单号" prop="id_order">
-          <el-input v-model="temp.id_order" disabled/>
+          <el-input v-model="temp.id_order" disabled />
         </el-form-item>
         <el-form-item label="下单日期" prop="create_time">
           <el-date-picker v-model="temp.create_time" type="datetime" placeholder="Please pick a date" />
@@ -141,11 +141,11 @@
 </template>
 
 <script>
-import { fetchPv, createArticle, updateArticle } from '@/api/article'
+import { fetchPv } from '@/api/article'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-
+import { fetchList, updateOrder, createOrder, deleteOrder } from '@/api/order'
 const dataTest = { // eslint-disable-line no-unused-vars
   items: [
     {
@@ -259,10 +259,18 @@ export default {
     this.getList()
   },
   methods: {
-    getList() {
+    async getList() {
       this.listLoading = true
-      this.list = dataTest.items
-      this.total = dataTest.total
+      await fetchList(this.listQuery).then(res => {
+        const items = res.data.items
+        this.total = res.data.total
+        this.list = items.map(v => {
+          v.state_order = orderStateTypeKeyValue[v.state_order]
+          return v
+        }).catch(err => {
+          console.log(err)
+        })
+      })
       this.listLoading = false
     },
     handleFilter() {
@@ -314,7 +322,7 @@ export default {
         if (valid) {
           this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
           this.temp.author = 'vue-element-admin'
-          createArticle(this.temp).then(() => {
+          createOrder(this.temp).then(res => {
             this.list.unshift(this.temp)
             this.dialogFormVisible = false
             this.$notify({
@@ -341,7 +349,7 @@ export default {
         if (valid) {
           const tempData = Object.assign({}, this.temp)
           tempData.timestamp = +new Date(tempData.timestamp) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
-          updateArticle(tempData).then(() => {
+          updateOrder(tempData).then(() => {
             const index = this.list.findIndex(v => v.id === this.temp.id)
             this.list.splice(index, 1, this.temp)
             this.dialogFormVisible = false
@@ -363,6 +371,9 @@ export default {
         duration: 2000
       })
       this.list.splice(index, 1)
+    },
+    deleteData(row) {
+      return deleteOrder(row)
     },
     handleFetchPv(pv) {
       fetchPv(pv).then(response => {
