@@ -20,6 +20,14 @@ import './utils/error-log' // error log
 
 import * as filters from './filters' // global filters
 
+import VueAMap from 'vue-amap'
+Vue.use(VueAMap)
+VueAMap.initAMapApiLoader({
+  key: '518c7ba3cc2ab4f70dcda0cbc050add2',
+  plugin: ['AMap.Driving', 'AMap.Autocomplete', 'AMap.Scale', 'AMap.OverView', 'AMap.ToolBar', 'AMap.MapType', 'AMap.PlaceSearch', 'AMap.Geolocation', 'AMap.Geocoder'],
+  v: '1.4.4',
+  uiVersion: '1.0'
+})
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api

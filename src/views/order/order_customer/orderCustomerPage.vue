@@ -277,6 +277,7 @@ export default {
   },
   methods: {
     async getList() {
+      console.log(this.listQuery)
       this.listLoading = true
       const data = orderTest
       const items = data.items
@@ -286,7 +287,6 @@ export default {
         return v
       })
       this.listLoading = false
-      console.log(this.list)
       console.log(this.listQuery.importance)
     },
     handleFilter() {
