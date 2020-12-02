@@ -4,27 +4,39 @@ import router, { resetRouter } from '@/router'
 
 const state = {
   token: getToken(),
-  name: '',
-  avatar: '',
-  introduction: '',
-  roles: []
+  username: '',
+  email: '',
+  phone: '',
+  roles: [],
+  petName: '',
+  icon: '',
+  organizationName: ''
 }
 
 const mutations = {
   SET_TOKEN: (state, token) => {
     state.token = token
   },
-  SET_INTRODUCTION: (state, introduction) => {
-    state.introduction = introduction
+  SET_ICON: (state, icon) => {
+    state.icon = icon
+  },
+  SET_PHONE: (state, phone) => {
+    state.phone = phone
+  },
+  SET_PETNAME: (state, petName) => {
+    state.petName = petName
   },
   SET_NAME: (state, name) => {
-    state.name = name
+    state.username = name
   },
-  SET_AVATAR: (state, avatar) => {
-    state.avatar = avatar
+  SET_EMAIL: (state, email) => {
+    state.email = email
   },
   SET_ROLES: (state, roles) => {
     state.roles = roles
+  },
+  SET_ORGANIZATIONNAME: (state, name) => {
+    state.organizationName = name
   }
 }
 
@@ -33,10 +45,9 @@ const actions = {
   login({ commit }, userInfo) {
     const { username, password } = userInfo
     return new Promise((resolve, reject) => {
-      login({ username: username.trim(), password: password }).then(response => {
-        const { data } = response
-        commit('SET_TOKEN', data.token)
-        setToken(data.token)
+      login({ identification: username.trim(), password: password }).then(response => {
+        commit('SET_TOKEN', response.token)
+        setToken(response.token)
         resolve()
       }).catch(error => {
         reject(error)
@@ -48,23 +59,28 @@ const actions = {
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
       getInfo(state.token).then(response => {
-        const { data } = response
+        const data = response
+
+        console.log(typeof data)
 
         if (!data) {
           reject('Verification failed, please Login again.')
         }
 
-        const { roles, name, avatar, introduction } = data
+        const { role, username, email, phone, petName, orgName, icon } = data
 
         // roles must be a non-empty array
-        if (!roles || roles.length <= 0) {
+        if (!role || role.length <= 0) {
           reject('getInfo: roles must be a non-null array!')
         }
 
-        commit('SET_ROLES', roles)
-        commit('SET_NAME', name)
-        commit('SET_AVATAR', avatar)
-        commit('SET_INTRODUCTION', introduction)
+        commit('SET_ROLES', role)
+        commit('SET_NAME', username)
+        commit('SET_EMAIL', email)
+        commit('SET_ORGANIZATIONNAME', orgName)
+        commit('SET_PHONE', phone)
+        commit('SET_PETNAME', petName)
+        commit('SET_ICON', icon)
         resolve(data)
       }).catch(error => {
         reject(error)
@@ -79,7 +95,6 @@ const actions = {
         commit('SET_TOKEN', '')
         commit('SET_ROLES', [])
         commit('SET_NAME', '')
-        commit('SET_AVATAR', '')
         removeToken()
         resetRouter()
 
