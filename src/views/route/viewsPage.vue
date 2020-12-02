@@ -78,13 +78,13 @@
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="120px" style="width: 400px; margin-left:50px;">
         <el-form-item label="路线ID" prop="id_line">
-          <el-input v-model="temp.id_line" :disabled="'Edit' === textMap[dialogStatus]" />
+          <el-input v-model="temp.id_line" :disabled="'update' === dialogStatus" />
         </el-form-item>
         <el-form-item label="起始配送站点ID" prop="start_distribution">
-          <el-input v-model="temp.start_distribution" :disabled="'Edit' === textMap[dialogStatus]" />
+          <el-input v-model="temp.start_distribution" :disabled="'update' === dialogStatus" />
         </el-form-item>
         <el-form-item label="终点配送站点ID" prop="end_distribution">
-          <el-input v-model="temp.end_distribution" :disabled="'Edit' === textMap[dialogStatus]" />
+          <el-input v-model="temp.end_distribution" :disabled="'update' === dialogStatus" />
         </el-form-item>
         <el-form-item label="起点经度" prop="start_longitude">
           <el-input v-model="temp.start_longitude" />
@@ -101,7 +101,7 @@
         <el-form-item label="运费" prop="cost">
           <el-input v-model="temp.cost" />
         </el-form-item>
-        <el-form-item v-if="'Edit' === textMap[dialogStatus]" label="负责司机" prop="driver_name">
+        <el-form-item v-if="'update' === dialogStatus" label="负责司机" prop="driver_name">
           <el-input v-model="temp.driver_name" />
         </el-form-item>
       </el-form>
@@ -177,8 +177,8 @@ export default {
       dialogFormVisible: false,
       downloadLoading: false,
       textMap: {
-        update: 'Edit',
-        create: 'Create'
+        update: '路线详情',
+        create: '新建路线'
       },
       rules: {
         id_line: [{ required: true, message: 'id_line is required', trigger: 'blur' }],
