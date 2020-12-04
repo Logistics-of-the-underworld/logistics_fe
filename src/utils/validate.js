@@ -2,6 +2,9 @@
  * Created by PanJiaChen on 16/11/18.
  */
 
+import el from 'element-ui/src/locale/lang/el'
+import { verifyEmail, verifyUsername } from '@/api/user'
+
 /**
  * @param {string} path
  * @returns {Boolean}
@@ -59,9 +62,29 @@ export function validAlphabets(str) {
  * @param {string} email
  * @returns {Boolean}
  */
-export function validEmail(email) {
+export function validEmail(role, value, callback) {
   const reg = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-  return reg.test(email)
+  if (reg.test(value)) {
+    verifyEmail(value).then(resp => {
+      if (resp.status.toString() === 'fail') {
+        callback(new Error('邮箱已被占用'))
+      } else {
+        callback()
+      }
+    })
+  } else {
+    callback(new Error('输入正确的邮箱地址'))
+  }
+}
+
+export function validName(role, value, callback) {
+  verifyUsername(value).then(resp => {
+    if (resp.status.toString() === 'fail') {
+      callback(new Error('用户名已被占用'))
+    } else {
+      callback()
+    }
+  })
 }
 
 /**
