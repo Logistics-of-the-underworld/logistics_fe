@@ -2,15 +2,15 @@ import request from '@/utils/request'
 
 export function fetchList(query) {
   return request({
-    url: '/getAllRoute',
-    method: 'get',
+    url: '/route/getAllRoute',
+    method: 'post',
     params: query
   })
 }
 
 export function addRoute(params) {
   return request({
-    url: '/addRoute',
+    url: '/route/addRoute',
     method: 'post',
     params: params
   })
@@ -18,7 +18,7 @@ export function addRoute(params) {
 
 export function deleteRoute(params) {
   return request({
-    url: '/deleteRoute',
+    url: '/route/deleteRoute',
     method: 'get',
     params: params
   })
@@ -26,8 +26,16 @@ export function deleteRoute(params) {
 
 export function updateRoute(params) {
   return request({
-    url: '/updateRoute',
+    url: '/route/updateRoute',
     method: 'post',
+    params: params
+  })
+}
+
+export function getRoadMap(params) {
+  return request({
+    url: '/route/getRoadMap',
+    method: 'get',
     params: params
   })
 }

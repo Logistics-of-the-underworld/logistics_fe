@@ -1,6 +1,6 @@
 <template>
   <div style="width:100%;height:800px;">
-    <div class="container">
+    <div v-loading="loaded" class="container">
       <el-amap-search-box
         class="search-box"
         :search-option="searchOption"
@@ -51,6 +51,8 @@
 
 <script>
 import { AMapManager, lazyAMapApiLoaderInstance } from 'vue-amap'
+import { getRoadMap } from '../../api/route'
+
 const amapManager = new AMapManager()
 export default {
   name: 'RoutePage',
@@ -69,7 +71,7 @@ export default {
       zoom: 5,
       lng: 0,
       lat: 0,
-      loaded: false,
+      loaded: true,
       events: {
         init() {
           lazyAMapApiLoaderInstance.load().then(() => {
@@ -117,19 +119,6 @@ export default {
           pName: 'Driving',
           events: {
             init(o) {
-              self.start.forEach((s, index) => {
-                o.search(new AMap.LngLat(s[0], s[1]), new AMap.LngLat(self.end[index][0], self.end[index][1]), (status, result) => {
-                  // result 即是对应的驾车导航信息，相关数据结构文档请参考  https://lbs.amap.com/api/javascript-api/reference/route-search#m_DrivingResult
-                  if (status === 'complete') {
-                    self.searchRoute(result)
-                  } else {
-                    console.log('获取驾车数据失败')
-                  }
-                })
-              })
-              setTimeout(() => self.initRoute(), 800)
-              // 页面渲染好后
-              self.$nextTick()
             }
           }
         },
@@ -166,15 +155,12 @@ export default {
                     events: {
                       click: (MapsEvent) => {
                         alert('click marker')
-                        console.log(MapsEvent)
                       }
                     }
                   }
                   const newMarkers = self.amap_marksers
                   newMarkers.push(mark)
                   self.amap_marksers = newMarkers
-                  // load
-                  self.loaded = true
                   // 页面渲染好后
                   self.$nextTick()
                 }
@@ -187,7 +173,6 @@ export default {
           pName: 'ToolBar',
           events: {
             init(instance) {
-              // console.log(instance);
             }
           }
         },
@@ -196,7 +181,6 @@ export default {
           pName: 'OverView',
           events: {
             init(instance) {
-              // console.log(instance);
             }
           }
         },
@@ -206,119 +190,16 @@ export default {
           defaultType: 0,
           events: {
             init(instance) {
-              // console.log(instance);
             }
           }
         }
       ],
       path: [],
       start: [
-        [107.165388, 34.313259],
-        [121.5273285, 31.21515044],
-        [116.342058, 32.614061]
       ],
       end: [
-        [103.355992, 34.64531],
-        [120.5273285, 31.21515044],
-        [117.031803, 32.622703]
       ],
       markers: [
-        {
-          position: [117.031803, 32.622703],
-          visible: true,
-          draggable: false,
-          offset: [-10, -25],
-          label: {
-            content: '目标4',
-            offset: [6, 40]
-          },
-          events: {
-            click: (MapsEvent) => {
-              alert('click marker')
-              console.log(MapsEvent)
-            }
-          }
-        },
-        {
-          position: [116.342058, 32.614061],
-          visible: true,
-          draggable: false,
-          offset: [-10, -25],
-          label: {
-            content: '目标3',
-            offset: [6, 40]
-          },
-          events: {
-            click: (MapsEvent) => {
-              alert('click marker')
-              console.log(MapsEvent)
-            }
-          }
-        },
-        {
-          position: [107.165388, 34.313259],
-          visible: true,
-          draggable: false,
-          offset: [-10, -25],
-          label: {
-            content: '目标1',
-            offset: [6, 40]
-          },
-          events: {
-            click: (MapsEvent) => {
-              alert('click marker')
-              console.log(MapsEvent)
-            }
-          }
-        },
-        {
-          position: [103.355992, 34.64531],
-          visible: true,
-          draggable: false,
-          offset: [-10, -25],
-          label: {
-            content: '目标2',
-            offset: [6, 40]
-          },
-          events: {
-            click: (MapsEvent) => {
-              alert('click marker')
-              console.log(MapsEvent)
-            }
-          }
-        },
-        {
-          position: [121.5273285, 31.21515044],
-          visible: true,
-          draggable: false,
-          offset: [-10, -25],
-          label: {
-            content: '收货地',
-            offset: [6, 40]
-          },
-          events: {
-            click: (MapsEvent) => {
-              alert('click marker')
-              console.log(MapsEvent)
-            }
-          }
-        },
-        {
-          position: [120.5273285, 31.21515044],
-          visible: true,
-          draggable: false,
-          offset: [-10, -25],
-          label: {
-            content: '发货地',
-            offset: [6, 40]
-          },
-          events: {
-            click: (MapsEvent) => {
-              alert('click marker')
-              console.log(MapsEvent)
-            }
-          }
-        }
       ]
     }
   },
@@ -340,7 +221,58 @@ export default {
       }
     }
   },
+  created() {
+    this.getData()
+  },
   methods: {
+    async getData() {
+      await getRoadMap().then(res => {
+        res.data.forEach((item, index) => {
+          console.log(item)
+          const s = []
+          s.push(item.startLongitude)
+          s.push(item.startLatitude)
+          this.start.push(s)
+          let tempStart = {
+            position: s,
+            visible: true,
+            draggable: false,
+            offset: [-10, -25],
+            label: {
+              content: item.startDistribution,
+              offset: [6, 40]
+            },
+            events: {
+              click: (MapsEvent) => {
+                alert('click marker')
+              }
+            }
+          }
+          this.markers.push(tempStart)
+          const e = []
+          e.push(item.endLongitude)
+          e.push(item.endLatitude)
+          this.end.push(e)
+          let tempEnd = {
+            position: e,
+            visible: true,
+            draggable: false,
+            offset: [-10, -25],
+            label: {
+              content: item.endDistribution,
+              offset: [6, 40]
+            },
+            events: {
+              click: (MapsEvent) => {
+                alert('click marker')
+              }
+            }
+          }
+          this.markers.push(tempEnd)
+        })
+      })
+      this.pathPlanning()
+    },
     onSearchResult(pois) {
       const vm = this
       let latSum = 0
@@ -362,11 +294,9 @@ export default {
             events: {
               click: (MapsEvent) => {
                 alert('click marker')
-                console.log(MapsEvent)
               }
             }
           }
-          console.log(vm.amap_marksers)
           vm.amap_marksers.push(mark)
         })
         const center = {
@@ -375,6 +305,30 @@ export default {
         }
         this.center = [center.lng, center.lat]
       }
+    },
+    pathPlanning() {
+      const self = this
+      const Driving = new AMap.Driving({
+        hideMarkers: true,
+        showTraffic: false,
+        isOutline: true
+      })
+      self.start.forEach((s, index) => {
+        Driving.search(new AMap.LngLat(s[0], s[1]), new AMap.LngLat(self.end[index][0], self.end[index][1]), (status, result) => {
+          // result 即是对应的驾车导航信息，相关数据结构文档请参考  https://lbs.amap.com/api/javascript-api/reference/route-search#m_DrivingResult
+          if (status === 'complete') {
+            self.searchRoute(result)
+          } else {
+            console.log('获取驾车数据失败')
+          }
+        })
+      })
+      setTimeout(() => {
+        self.initRoute()
+        self.loaded = false
+      }, 1000)
+      // 页面渲染好后
+      self.$nextTick()
     },
     initRoute() {
       const vm = this
@@ -392,23 +346,8 @@ export default {
           // 获取巡航路径中的路径坐标数组
           getPath: (pathData, pathIndex) => {
             return pathData.path
-          },
-          getHoverTitle: function(pathData, pathIndex, pointIndex) {
-            if (pointIndex >= 0) {
-              // point
-              return pointIndex + '/' + pathData.path.length
-            }
-            return '点数量' + pathData.path.length
           }
         })
-        // for (let i = 0; i < vm.path.length; i++) {
-        //   // 创建巡航器
-        //   var pathNavigator = pathSimplifierIns.createPathNavigator(i, {
-        //     loop: true, // 是否循环
-        //     speed: 5000 // 速度(km/h)
-        //   })
-        //   pathNavigator.start()
-        // }
       })
     },
     searchRoute(result) {

@@ -3,7 +3,9 @@
     <hamburger :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
 
     <breadcrumb class="breadcrumb-container" />
-
+    <div class="head-title">
+      <span>123</span>
+    </div>
     <div class="right-menu">
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
@@ -91,7 +93,10 @@ export default {
   .breadcrumb-container {
     float: left;
   }
-
+  .head-title {
+    position: absolute;
+    right: 120px;
+  }
   .right-menu {
     float: right;
     height: 100%;
