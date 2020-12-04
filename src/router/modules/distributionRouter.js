@@ -7,7 +7,7 @@ export const distributionRouter = {
   meta: {
     title: '配送点',
     icon: 'component',
-    roles: ['admin', 'root']
+    roles: [['admin', 'root']]
   },
   children: [
     {
@@ -16,7 +16,7 @@ export const distributionRouter = {
       component: () => import('@/views/distribution/distributionPage'),
       meta: {
         // 如果需要权限才能进入这个路由的话 就加这个
-        roles: ['admin', 'root'],
+        roles: [['admin', 'root']],
         // 菜单标题
         title: '配送站点管理',
         // 菜单的图标
@@ -28,7 +28,7 @@ export const distributionRouter = {
       name: 'distribution-range',
       component: () => import('@/views/distribution/distribution-range'),
       meta: {
-        roles: ['admin', 'root'],
+        roles: [['admin', 'root']],
         title: '配送范围管理',
         icon: 'el-icon-document-copy'
       }
@@ -38,7 +38,7 @@ export const distributionRouter = {
       name: 'distribution-price',
       component: () => import('@/views/distribution/distribution-price'),
       meta: {
-        roles: ['admin', 'root'],
+        roles: [['admin', 'root']],
         title: '配送价格',
         icon: 'el-icon-document-copy'
       }
