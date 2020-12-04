@@ -19,44 +19,44 @@
         导出
       </el-button>
     </div>
-    <el-table v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 1011px;">
-      <el-table-column align="center" label="车牌号" width="80px">
+    <el-table v-loading="listLoading" :data="list" border fit highlight-current-row>
+      <el-table-column align="center" label="车牌号">
         <template slot-scope="{row}">
           <span>{{ row.id_license }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column width="180px" align="center" label="购买日期">
+      <el-table-column align="center" label="购买日期">
         <template slot-scope="{row}">
           <span>{{ row.create_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column width="120px" align="center" label="驾驶员">
+      <el-table-column align="center" label="驾驶员">
         <template slot-scope="{row}">
           <span>{{ row.driver_name }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column width="120px" align="center" label="车辆型号">
+      <el-table-column align="center" label="车辆型号">
         <template slot-scope="{row}">
           <span>{{ row.type }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column width="120px" align="center" label="限载">
+      <el-table-column align="center" label="限载">
         <template slot-scope="{row}">
           <span>{{ row.limit_kilogram }}kg</span>
         </template>
       </el-table-column>
 
-      <el-table-column width="120px" align="center" label="限容">
+      <el-table-column align="center" label="限容">
         <template slot-scope="{row}">
           <span>{{ row.limit_volume }}m³</span>
         </template>
       </el-table-column>
 
-      <el-table-column class-name="status-col" label="车辆状态" width="110px">
+      <el-table-column align="center" class-name="status-col" label="车辆状态">
         <template slot-scope="{row}">
           <el-tag :type="row.state | statusFilter">
             {{ row.state }}
@@ -64,7 +64,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="操作" width="160px">
+      <el-table-column align="center" label="操作">
         <template slot-scope="{row,$index}">
           <el-button type="primary" size="mini" @click="handleUpdate(row)">
             编辑

@@ -1,5 +1,5 @@
 <template>
-  <el-tabs type="border-card" :before-leave="handleClick">
+  <el-tabs type="card" :before-leave="handleClick">
     <el-tab-pane label="物流查询"><views-page v-if="visible" /></el-tab-pane>
     <el-tab-pane label="地图显示"><route-page v-if="!visible" /></el-tab-pane>
   </el-tabs>

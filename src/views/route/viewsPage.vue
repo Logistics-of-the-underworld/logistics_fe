@@ -14,55 +14,55 @@
         导出
       </el-button>
     </div>
-    <el-table v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%;">
-      <el-table-column align="center" label="路线ID" width="180px">
+    <el-table v-loading="listLoading" :data="list" fit highlight-current-row style="width: 100%;">
+      <el-table-column align="center" label="路线ID" >
         <template slot-scope="{row}">
           <span>{{ row.idLine }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column width="180px" align="center" label="起始配送站点ID">
+      <el-table-column  align="center" label="起始配送站点ID">
         <template slot-scope="{row}">
           <span>{{ row.startDistribution }}</span>
         </template>
       </el-table-column>
-      <el-table-column width="180px" align="center" label="终点配送站点ID">
+      <el-table-column  align="center" label="终点配送站点ID">
         <template slot-scope="{row}">
           <span>{{ row.endDistribution }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column width="150px" align="center" label="起点经度">
+      <el-table-column  align="center" label="起点经度">
         <template slot-scope="{row}">
           <span>{{ row.startLongitude }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column width="150px" align="center" label="起点纬度">
+      <el-table-column  align="center" label="起点纬度">
         <template slot-scope="{row}">
           <span>{{ row.startLatitude }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column width="150px" align="center" label="终点经度">
+      <el-table-column  align="center" label="终点经度">
         <template slot-scope="{row}">
           <span>{{ row.endLongitude }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column width="150px" align="center" label="终点纬度">
+      <el-table-column  align="center" label="终点纬度">
         <template slot-scope="{row}">
           <span>{{ row.endLatitude }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column width="150px" align="center" label="运费">
+      <el-table-column align="center" label="运费">
         <template slot-scope="{row}">
           <span>{{ row.cost }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="操作" width="160px">
+      <el-table-column align="center" label="操作" >
         <template slot-scope="{row,$index}">
           <el-button type="primary" size="mini" @click="handleUpdate(row)">
             编辑
