@@ -42,11 +42,6 @@
             <span>{{ row.createTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="配送点名称" align="center">
-          <template slot-scope="{row}">
-            <span>{{ row.nameDistribution }}</span>
-          </template>
-        </el-table-column>
         <el-table-column label="寄件人姓名" align="center">
           <template slot-scope="{row}">
             <span>{{ row.senderName }}</span>
@@ -98,14 +93,8 @@
         <el-form-item label="订单编号" prop="idOrder">
           <el-input v-model="temp.idOrder" :disabled="'update' === dialogStatus" />
         </el-form-item>
-        <el-form-item label="下单时间" prop="createTime">
-          <el-date-picker v-model="temp.createTime" type="datetime" placeholder="Please pick a date" :disabled="'update' === dialogStatus" />
-        </el-form-item>
         <el-form-item label="配送时间" prop="deliveryTime">
           <el-input v-model="temp.deliveryTime" :disabled="'update' === dialogStatus" />
-        </el-form-item>
-        <el-form-item label="配送点名称" prop="nameDistribution">
-          <el-input v-model="temp.nameDistribution" :disabled="'update' === dialogStatus" />
         </el-form-item>
         <el-form-item label="条形码" prop="barCodeUrl">
           <el-input v-model="temp.barCodeUrl" :disabled="'update' === dialogStatus" />
@@ -114,16 +103,16 @@
           <el-input v-model="temp.idLicense" :disabled="'update' === dialogStatus" />
         </el-form-item>
         <el-form-item label="寄件人姓名" prop="senderName">
-          <el-input v-model="temp.senderName" />
+          <el-input v-model="temp.senderName" :disabled="'未处理' !== orderStateTypeKeyValue[temp.stateOrder]"/>
         </el-form-item>
         <el-form-item label="寄件人电话" prop="senderPhone">
-          <el-input v-model="temp.senderPhone" />
+          <el-input v-model="temp.senderPhone" :disabled="'未处理' !== orderStateTypeKeyValue[temp.stateOrder]"/>
         </el-form-item>
         <el-form-item label="收件人姓名" prop="receiverName">
-          <el-input v-model="temp.receiverName" />
+          <el-input v-model="temp.receiverName" :disabled="'未处理' !== orderStateTypeKeyValue[temp.stateOrder]"/>
         </el-form-item>
         <el-form-item label="收件人电话" prop="receiverPhone">
-          <el-input v-model="temp.receiverPhone" />
+          <el-input v-model="temp.receiverPhone" :disabled="'未处理' !== orderStateTypeKeyValue[temp.stateOrder]"/>
         </el-form-item>
         <el-form-item label="订单状态" prop="stateOrder">
           <el-select v-model="temp.stateOrder" class="filter-item" placeholder="Please select" :disabled="'update' === dialogStatus">
@@ -139,7 +128,7 @@
         <el-form-item label="配送人电话" prop="courierPhone">
           <el-input v-model="temp.courierPhone" :disabled="'update' === dialogStatus" />
         </el-form-item>
-        <el-form-item label="用户评价">
+        <el-form-item v-if="6 === temp.stateOrder" label="用户评价">
           <el-rate v-model="temp.importance" :colors="['#99A9BF', '#F7BA2A', '#FF9900']" :max="3" style="margin-top:8px;" />
         </el-form-item>
         <el-form-item label="备注">
@@ -272,14 +261,12 @@ export default {
       showReviewer: false,
       temp: {
         idOrder: undefined,
-        nameDistribution: '',
         barCodeUrl: undefined,
         importance: 0,
         senderName: '',
         senderPhone: undefined,
         receiverName: '',
         receiverPhone: undefined,
-        createTime: new Date(),
         deliveryTime: undefined,
         idLicense: undefined,
         stateOrder: 0,
@@ -339,6 +326,7 @@ export default {
           v.createTime = this.dayjs(v.createTime).format('YYYY-MM-DD HH:mm')
           return v
         })
+        console.log(this.list)
         this.listLoading = false
       })
     },
@@ -398,8 +386,8 @@ export default {
     createData() {
       this.$refs['orderForm'].validate((valid) => {
         if (valid) {
-          this.newOrderData.idOrder = 'BZX' + parseInt(Math.random() * 100) + 1024 // mock a id
-          this.newOrderData.idGoods = 'ZXC' + parseInt(Math.random() * 100) + 1024 // mock a id
+          this.newOrderData.idOrder = 'BZX' + parseInt(Math.random() * 1000) + 1024 // mock a id
+          this.newOrderData.idGoods = 'ZXC' + parseInt(Math.random() * 1000) + 1024 // mock a id
           this.newOrderData.deliveryPrice = 20.00
           createOrder({ order: this.newOrderData }).then(() => {
             const temp = Object.assign(this.temp, this.newOrderData)
