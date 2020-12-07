@@ -13,7 +13,7 @@ export const handoverRouter = {
         // 菜单标题
         title: '交接单管理',
         // 菜单的图标
-        icon: 'el-icon-document-copy'
+        icon: 'el-icon-tickets'
       }
     }
   ]

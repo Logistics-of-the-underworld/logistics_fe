@@ -3,38 +3,35 @@
     <div class="filter-container">
       <el-input v-model="listQuery.license" placeholder="车牌号" style="width: 100px;margin-right:12px" class="filter-item" @keyup.enter.native="handleFilter" />
       <el-input v-model="listQuery.type" placeholder="车辆型号" style="width: 100px;margin-right:12px" class="filter-item" @keyup.enter.native="handleFilter" />
-      <el-input label="Date" prop="timestamp" style="width: 130px;margin-right:12px" placeholder="请选择购置时间">
-        <el-date-picker v-model="listQuery.timestamp" type="datetime" />
-      </el-input>
+
+      <el-date-picker style="width: 130px;margin-right:12px" v-model="listQuery.timestamp" type="datetime" placeholder="请选择购置时间" />
+
       <el-select v-model="listQuery.state" placeholder="车辆状态" clearable class="filter-item" style="width: 130px;margin-right:12px">
         <el-option v-for="item in vehicleStateTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" />
       </el-select>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         查询
       </el-button>
-      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
-        新建
-      </el-button>
-      <el-button v-waves :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">
-        导出
+      <el-button v-if="JSON.parse(this.$store.getters.roles)[0].toString() === 'vehicleManager'" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
+        添加
       </el-button>
     </div>
     <el-table v-loading="listLoading" :data="list" border fit highlight-current-row>
       <el-table-column align="center" label="车牌号">
         <template slot-scope="{row}">
-          <span>{{ row.id_license }}</span>
+          <span>{{ row.idLicense }}</span>
         </template>
       </el-table-column>
 
       <el-table-column align="center" label="购买日期">
         <template slot-scope="{row}">
-          <span>{{ row.create_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+          <span>{{ dayjs(row.createTime).format('YYYY-MM-DD HH:mm') }}</span>
         </template>
       </el-table-column>
 
       <el-table-column align="center" label="驾驶员">
         <template slot-scope="{row}">
-          <span>{{ row.driver_name }}</span>
+          <span>{{ row.driverName }}</span>
         </template>
       </el-table-column>
 
@@ -46,20 +43,20 @@
 
       <el-table-column align="center" label="限载">
         <template slot-scope="{row}">
-          <span>{{ row.limit_kilogram }}kg</span>
+          <span>{{ row.limitKilogram }}kg</span>
         </template>
       </el-table-column>
 
       <el-table-column align="center" label="限容">
         <template slot-scope="{row}">
-          <span>{{ row.limit_volume }}m³</span>
+          <span>{{ row.limitVolume }}m³</span>
         </template>
       </el-table-column>
 
       <el-table-column align="center" class-name="status-col" label="车辆状态">
         <template slot-scope="{row}">
           <el-tag :type="row.state | statusFilter">
-            {{ row.state }}
+            {{ vehicleStateTypeKeyValue[row.state] }}
           </el-tag>
         </template>
       </el-table-column>
@@ -79,28 +76,28 @@
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="100px" style="width: 400px; margin-left:50px;">
-        <el-form-item label="车牌号" prop="id_license">
-          <el-input v-model="temp.id_license" disabled />
+        <el-form-item label="车牌号">
+          <el-input v-model="temp.idLicense" :disabled="!(JSON.parse(this.$store.getters.roles)[0].toString() === 'vehicleManager')" />
         </el-form-item>
-        <el-form-item label="购买日期" prop="create_time">
-          <el-date-picker v-model="temp.create_time" type="datetime" placeholder="Please pick a date" />
+        <el-form-item label="购买日期">
+          <el-date-picker v-model="temp.createTime" type="datetime" placeholder="Please pick a date" :disabled="!(JSON.parse(this.$store.getters.roles)[0].toString() === 'vehicleManager')" />
         </el-form-item>
         <el-form-item label="车辆状态">
           <el-select v-model="temp.state" class="filter-item" placeholder="Please select">
-            <el-option v-for="item in vehicleStateTypeKeyValue" :key="item" :label="item" :value="item" />
+            <el-option v-for="item in vehicleStateTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" />
           </el-select>
         </el-form-item>
         <el-form-item label="车辆型号" prop="type">
           <el-input v-model="temp.type" />
         </el-form-item>
-        <el-form-item label="驾驶员姓名" prop="driver_name">
-          <el-input v-model="temp.driver_name" />
+        <el-form-item label="驾驶员姓名" prop="driverName">
+          <el-input v-model="temp.driverName" />
         </el-form-item>
-        <el-form-item label="限载" prop="limit_kilogram">
-          <el-input v-model="temp.limit_kilogram" />
+        <el-form-item label="限载" prop="limitKilogram">
+          <el-input v-model="temp.limitKilogram" />
         </el-form-item>
-        <el-form-item label="限容" prop="limit_volume">
-          <el-input v-model="temp.limit_volume" />
+        <el-form-item label="限容" prop="limitVolume">
+          <el-input v-model="temp.limitVolume" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -119,7 +116,8 @@
 import { parseTime } from '@/utils'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import { addTruck, deleteTruck, updateTruck } from '@/api/vehicle'
+import { addTruck, deleteTruck, fetchList, getVehicleByOrg, updateTruck } from '@/api/vehicle'
+// eslint-disable-next-line no-unused-vars
 const dataTest = {
   items: [
     {
@@ -170,12 +168,11 @@ export default {
       },
       // 临时窗口中的数据
       temp: {
-        id_license: undefined,
-        create_time: undefined,
-        driver_name: '',
-        timestamp: new Date(),
-        limit_volume: undefined,
-        limit_kilogram: undefined,
+        idLicense: undefined,
+        createTime: undefined,
+        driverName: '',
+        limitVolume: undefined,
+        limitKilogram: undefined,
         type: '',
         status: undefined
       },
@@ -186,11 +183,9 @@ export default {
         create: 'Create'
       },
       rules: {
-        type: [{ required: true, message: 'type is required', trigger: 'change' }],
-        timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],
-        driver_name: [{ required: true, message: 'driver_name is required', trigger: 'blur' }],
-        limit_kilogram: [{ required: true, message: 'limit_kilogram is required', trigger: 'blur' }],
-        limit_volume: [{ required: true, message: 'limit_volume is required', trigger: 'blur' }]
+        driverName: [{ required: true, message: '司机姓名不能为空', trigger: 'blur' }],
+        limitKilogram: [{ required: true, message: '请设置最大载重量', trigger: 'blur' }],
+        limitVolume: [{ required: true, message: '请设置最大运输体积', trigger: 'blur' }]
       }
     }
   },
@@ -200,20 +195,25 @@ export default {
   methods: {
     handleFilter() {
       this.listQuery.page = 1
-      this.getList()
+      this.listLoading = true
+
+      fetchList({ page: this.listQuery.page, limit: this.listQuery.limit,
+        id_license: this.listQuery.license, type: this.listQuery.type,
+        create_time: this.listQuery.timespan, state: this.listQuery.state,
+        org: this.$store.getters.organizationName }).then(resp => {
+        this.list = resp.date
+        this.total = resp.total
+      })
+
+      this.listLoading = false
     },
     async getList() {
       this.listLoading = true
-      const data = dataTest
-      const items = data.items
-      this.total = data.total
-      this.list = items.map(v => {
-        v.state = vehicleStateTypeKeyValue[v.state]
-        // this.$set(v, 'edit', false) // https://vuejs.org/v2/guide/reactivity.html
-        return v
+      getVehicleByOrg({ org: this.$store.getters.organizationName, current: this.listQuery.page, size: this.listQuery.limit }).then(resp => {
+        this.list = resp.vehicleList
+        this.total = resp.total
       })
       this.listLoading = false
-      console.log(this.list)
     },
     handleCreate() {
       this.resetTemp()
@@ -245,15 +245,12 @@ export default {
       })
     },
     deleteData(row) {
-      return deleteTruck(row)
+      return deleteTruck({ idLicense: row.idLicense })
     },
     createData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
-          this.temp.author = 'vue-element-admin'
-          addTruck(this.temp).then(res => {
-            this.list.unshift(this.temp)
+          addTruck({ vehicle: JSON.stringify(this.temp), org: this.$store.getters.organizationName }).then(res => {
             this.dialogFormVisible = false
             this.$notify({
               title: 'Success',
@@ -261,6 +258,7 @@ export default {
               type: 'success',
               duration: 2000
             })
+            this.getList()
           })
         }
       })
@@ -270,9 +268,7 @@ export default {
         if (valid) {
           const tempData = Object.assign({}, this.temp)
           tempData.timestamp = +new Date(tempData.timestamp) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
-          updateTruck(tempData).then(() => {
-            const index = this.list.findIndex(v => v.id_license === this.temp.id_license)
-            this.list.splice(index, 1, this.temp)
+          updateTruck({ vehicle: JSON.stringify(tempData) }).then(() => {
             this.dialogFormVisible = false
             this.$notify({
               title: 'Success',
@@ -280,22 +276,9 @@ export default {
               type: 'success',
               duration: 2000
             })
+            this.getList()
           })
         }
-      })
-    },
-    handleDownload() {
-      this.downloadLoading = true
-      import('@/vendor/Export2Excel').then(excel => {
-        const tHeader = ['timestamp', 'title', 'type', 'importance', 'status']
-        const filterVal = ['timestamp', 'title', 'type', 'importance', 'status']
-        const data = this.formatJson(filterVal)
-        excel.export_json_to_excel({
-          header: tHeader,
-          data,
-          filename: 'table-list'
-        })
-        this.downloadLoading = false
       })
     },
     formatJson(filterVal) {
@@ -313,12 +296,11 @@ export default {
     },
     resetTemp() {
       this.temp = {
-        id_license: undefined,
-        create_time: undefined,
-        driver_name: '',
-        timestamp: new Date(),
-        limit_volume: undefined,
-        limit_kilogram: undefined,
+        idLicense: undefined,
+        createTime: undefined,
+        driverName: '',
+        limitVolume: undefined,
+        limitKilogram: undefined,
         type: '',
         status: undefined
       }
