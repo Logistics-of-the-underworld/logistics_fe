@@ -1,5 +1,5 @@
 <template>
-  <el-tabs type="border-card" :before-leave="handleClick">
+  <el-tabs type="card" :before-leave="handleClick">
     <el-tab-pane label="物流查询"><order-customer-page v-if="visible"/></el-tab-pane>
     <el-tab-pane label="地图显示"><camap v-if="!visible"/></el-tab-pane>
   </el-tabs>
@@ -21,7 +21,6 @@ export default {
   },
   methods: {
     handleClick(activeName, oldActiveName) {
-      console.log(activeName, oldActiveName)
       if (activeName === '0') {
         this.visible = true
       } else {

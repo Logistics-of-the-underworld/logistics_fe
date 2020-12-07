@@ -147,7 +147,7 @@ import { fetchPv } from '@/api/article'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import { fetchList, updateOrder, createOrder, deleteOrder } from '@/api/order'
+import { fetchList, updateOrder, createOrder, deleteOrder } from '@/api/orderManage'
 
 const orderStateOptions = [
   { key: 0, display_name: '未处理' },
@@ -160,11 +160,6 @@ const orderStateOptions = [
   { key: 7, display_name: '退订' }
 ]
 
-const timeSpanOption = [
-  { key: 'morning', display_name: '9:00 - 12:00' },
-  { key: 'afternoon', display_name: '13:30 - 17:30' },
-  { key: 'evening', display_name: '19:00 - 21:30' }
-]
 // const timeSpanTypeKeyValue = timeSpanOption.reduce((acc, cur) => {
 //   acc[cur.key] = cur.display_name
 //   return acc
@@ -210,8 +205,6 @@ export default {
         receiverName: undefined
       },
       importanceOptions: [1, 2, 3],
-      // 三个下拉框选项
-      timeSpanOption,
       orderStateOptions,
       sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
       orderStateTypeKeyValue,
