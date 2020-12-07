@@ -132,7 +132,7 @@ export default {
         idRange: undefined,
         startDeliveryTime: undefined,
         endDeliveryTime: undefined,
-        marks: undefined,
+        marks: undefined
       },
       dialogStatus: '',
       dialogFormVisible: false,
@@ -174,7 +174,7 @@ export default {
     },
     async getDistributionRange() {
       this.loading = true
-      let parmas
+      let parmas = undefined
       if (this.roles[0] === 'admin' && this.roles[1] === 'distribution') {
         parmas = this.name_company
       }

@@ -98,7 +98,13 @@
           <el-input v-model="temp.idOrder" disabled />
         </el-form-item>
         <el-form-item label="下单日期" prop="createTime">
-          <el-date-picker v-model="temp.createTime" type="datetime" placeholder="Please pick a date" />
+          <el-date-picker v-model="temp.createTime" type="datetime" disabled />
+        </el-form-item>
+        <el-form-item label="寄件人姓名" prop="senderName">
+          <el-input v-model="temp.senderName" />
+        </el-form-item>
+        <el-form-item label="收件人姓名" prop="receiverName">
+          <el-input v-model="temp.receiverName" />
         </el-form-item>
         <el-form-item label="订单状态">
           <el-select v-model="temp.stateOrder" class="filter-item" placeholder="Please select">
@@ -107,12 +113,6 @@
         </el-form-item>
         <el-form-item label="条形码" prop="barCodeUrl">
           <el-input v-model="temp.barCodeUrl" />
-        </el-form-item>
-        <el-form-item label="寄件人姓名" prop="senderName">
-          <el-input v-model="temp.senderName" />
-        </el-form-item>
-        <el-form-item label="收件人姓名" prop="receiverName">
-          <el-input v-model="temp.receiverName" />
         </el-form-item>
         <el-form-item label="配送价格" prop="deliveryPrice">
           <el-input v-model="temp.deliveryPrice" />

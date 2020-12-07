@@ -1,5 +1,6 @@
 <template>
   <el-table
+    v-loading="listLoading"
     :data="tableData"
     style="width: 100%"
     :row-class-name="tableRowClassName"
@@ -51,46 +52,39 @@
 </template>
 
 <script>
+import { fetchList } from '../../api/distributionPrice'
+import { mapGetters } from 'vuex'
+
 export default {
   name: 'DistributionPrice',
   data() {
     return {
-      tableData: [{
-        id_delivery_price: '101',
-        spot_or_range: '配送点价格',
-        first_kilogram: '2',
-        second_kilogram: '1',
-        first_cubic: '2',
-        second_cubic: '2',
-        price: '50'
-      }, {
-        id_delivery_price: '102',
-        spot_or_range: '配送点价格',
-        first_kilogram: '2',
-        second_kilogram: '1',
-        first_cubic: '2',
-        second_cubic: '2',
-        price: '50'
-      }, {
-        id_delivery_price: '103',
-        spot_or_range: '配送点价格',
-        first_kilogram: '2',
-        second_kilogram: '1',
-        first_cubic: '2',
-        second_cubic: '2',
-        price: '50'
-      }, {
-        id_delivery_price: '104',
-        spot_or_range: '配送点价格',
-        first_kilogram: '2',
-        second_kilogram: '1',
-        first_cubic: '2',
-        second_cubic: '2',
-        price: '50'
-      }]
+      tableData: [],
+      listLoading: true
     }
   },
+  created() {
+    this.getList()
+  },
+  computed: {
+    ...mapGetters({
+      roles: 'roles'
+    })
+  },
   methods: {
+    async getList() {
+      this.listLoading = true
+      let parmas = ''
+      if (this.roles[0] === 'admin' && this.roles[1] === 'distribution') {
+        parmas = this.name_company
+      }
+      await fetchList(parmas || 'no').then(res => {
+        this.total = res.total
+        this.list = res.data
+        this.listLoading = false
+      })
+      console.log(this.list)
+    },
     tableRowClassName({ row, rowIndex }) {
       if (rowIndex === 1) {
         return 'warning-row'

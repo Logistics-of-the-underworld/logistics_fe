@@ -227,6 +227,7 @@ export default {
     },
     confirmEdit(row) {
       row.edit = false
+      row.updateTime = this.dayjs(new Date()).format('YYYY-MM-DD')
       updateDistribution({ distribution: row }).then(res => {
         this.$message({
           message: '修改成功',
@@ -304,6 +305,7 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           const tempData = Object.assign({}, this.temp)
+          console.log(tempData)
           updateDistribution({ distribution: tempData }).then(() => {
             const index = this.tableData.findIndex(v => v.idDistribution === this.temp.idDistribution)
             this.tableData.splice(index, 1, this.temp)

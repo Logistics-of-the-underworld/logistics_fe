@@ -150,20 +150,58 @@
         <el-button @click="dialogFormVisible = false">
           取消
         </el-button>
-        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
+        <el-button type="primary" @click="updateData()">
           保存
         </el-button>
       </div>
     </el-dialog>
 
     <el-dialog :visible.sync="creatOrderVisible" title="新建订单">
-      <el-form ref="orderForm" :rules="rules" :model="pvData" label-position="left" label-width="180px" style="width: 400px; margin-left:50px;">
+      <el-form ref="orderForm" :rules="rules" :model="newOrderData" label-position="left" label-width="120px" style="width: 400px; margin-left:50px;">
         <el-form-item label="寄件人姓名" prop="senderName">
-          <el-input v-model="pvData.senderName" />
+          <el-input v-model="newOrderData.senderName" />
+        </el-form-item>
+        <el-form-item label="寄件人电话" prop="senderPhone">
+          <el-input v-model="newOrderData.senderPhone" />
+        </el-form-item>
+        <el-form-item label="寄件人地址" prop="senderAddress">
+          <el-input v-model="newOrderData.senderAddress" />
+        </el-form-item>
+        <el-form-item label="收件人姓名" prop="receiverName">
+          <el-input v-model="newOrderData.receiverName" />
+        </el-form-item>
+        <el-form-item label="收件人电话" prop="receiverPhone">
+          <el-input v-model="newOrderData.receiverPhone" />
+        </el-form-item>
+        <el-form-item label="寄件人地址" prop="receiverAddress">
+          <el-input v-model="newOrderData.receiverAddress" />
+        </el-form-item>
+        <el-form-item label="物品名称" prop="nameGoods">
+          <el-input v-model="newOrderData.nameGoods" />
+        </el-form-item>
+        <el-form-item label="物品数量" prop="countGoods">
+          <el-input v-model="newOrderData.countGoods" />
+        </el-form-item>
+        <el-form-item label="物品类别" prop="idSortGoods">
+          <el-input v-model="newOrderData.idSortGoods" />
+        </el-form-item>
+        <el-form-item v-if="newOrderData.deliveryPrice" label="配送价格" prop="deliveryPrice">
+          <el-input v-model="newOrderData.deliveryPrice" disabled/>
+        </el-form-item>
+        <el-form-item label="支付方式" prop="paymentMethod">
+          <el-select v-model="newOrderData.paymentMethod" class="filter-item" placeholder="请选择">
+            <el-option v-for="item in paymentMethodStateOptions" :key="item.display_name" :label="item.display_name" :value="item.display_name" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="备注" prop="marks">
+          <el-input v-model="newOrderData.marks"/>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="creatOrderVisible = false">Confirm</el-button>
+        <el-button @click="creatOrderVisible = false">
+          取消
+        </el-button>
+        <el-button type="primary" @click="createData()">立即下单</el-button>
       </span>
     </el-dialog>
   </div>
@@ -175,7 +213,11 @@ import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import { fetchList, createOrder, updateOrder, deleteOrder } from '@/api/orderCustomer'
-
+import { mapGetters } from 'vuex'
+const paymentMethodStateOptions = [
+  { key: 0, display_name: '在线支付' },
+  { key: 1, display_name: '货到付款' }
+]
 const orderStateOptions = [
   { key: 0, display_name: '未处理' },
   { key: 1, display_name: '审核通过' },
@@ -216,6 +258,7 @@ export default {
       total: 0,
       listLoading: true,
       orderStateOptions,
+      paymentMethodStateOptions,
       orderStateTypeKeyValue,
       listQuery: {
         page: 1,
@@ -231,15 +274,15 @@ export default {
         idOrder: undefined,
         nameDistribution: '',
         barCodeUrl: undefined,
-        importance: 1,
+        importance: 0,
         senderName: '',
         senderPhone: undefined,
         receiverName: '',
         receiverPhone: undefined,
-        createTime: undefined,
+        createTime: new Date(),
         deliveryTime: undefined,
         idLicense: undefined,
-        stateOrder: undefined,
+        stateOrder: 0,
         courier: '',
         courierPhone: undefined,
         marks: ''
@@ -251,16 +294,23 @@ export default {
         create: '创建订单信息'
       },
       creatOrderVisible: false,
-      pvData: {
+      newOrderData: {
         idOrder: undefined,
+        idGoods: undefined,
         senderName: '',
         senderPhone: undefined,
+        senderAddress: undefined,
         receiverName: '',
         receiverPhone: undefined,
+        receiverAddress: undefined,
         paymentMethod: undefined,
         createTime: undefined,
-        courier: '',
-        courierPhone: undefined,
+        nameGoods: undefined,
+        countGoods: undefined,
+        idSortGoods: undefined,
+        deliveryPrice: undefined,
+        itemSort: undefined,
+        username: this.username,
         marks: ''
       },
       rules: {
@@ -271,6 +321,11 @@ export default {
       downloadLoading: false
     }
   },
+  computed: {
+    ...mapGetters([
+      'username'
+    ])
+  },
   created() {
     this.getList()
   },
@@ -280,13 +335,11 @@ export default {
       await fetchList(this.listQuery).then(res => {
         this.total = res.total
         this.list = res.data
-        console.log(this.list)
         this.list = this.list.map(v => {
           v.createTime = this.dayjs(v.createTime).format('YYYY-MM-DD HH:mm')
           return v
         })
         this.listLoading = false
-        console.log(this.listQuery.importance)
       })
     },
     handleFilter() {
@@ -314,36 +367,24 @@ export default {
       }
       this.handleFilter()
     },
-    resetTemp() {
-      this.temp = {
-        idOrder: undefined,
-        nameDistribution: '',
-        barCodeUrl: undefined,
-        importance: 1,
-        senderName: '',
-        senderPhone: undefined,
-        receiverName: '',
-        receiverPhone: undefined,
-        createTime: undefined,
-        deliveryTime: undefined,
-        idLicense: undefined,
-        stateOrder: undefined,
-        courier: '',
-        courierPhone: undefined,
-        marks: ''
-      }
-    },
     restOderTemp() {
-      this.pvData = {
+      this.newOrderData = {
         idOrder: undefined,
+        idGoods: undefined,
         senderName: '',
         senderPhone: undefined,
+        senderAddress: undefined,
         receiverName: '',
         receiverPhone: undefined,
+        receiverAddress: undefined,
         paymentMethod: undefined,
         createTime: undefined,
-        courier: '',
-        courierPhone: undefined,
+        nameGoods: undefined,
+        countGoods: undefined,
+        idSortGoods: undefined,
+        deliveryPrice: undefined,
+        itemSort: undefined,
+        username: this.username,
         marks: ''
       }
     },
@@ -357,9 +398,14 @@ export default {
     createData() {
       this.$refs['orderForm'].validate((valid) => {
         if (valid) {
-          this.pvData.idOrder = parseInt(Math.random() * 100) + 1024 // mock a id
-          createOrder({ order: this.pvData }).then(() => {
-            this.list.unshift(this.pvData)
+          this.newOrderData.idOrder = 'BZX' + parseInt(Math.random() * 100) + 1024 // mock a id
+          this.newOrderData.idGoods = 'ZXC' + parseInt(Math.random() * 100) + 1024 // mock a id
+          this.newOrderData.deliveryPrice = 20.00
+          createOrder({ order: this.newOrderData }).then(() => {
+            const temp = Object.assign(this.temp, this.newOrderData)
+            temp.createTime = new Date()
+            console.log(temp)
+            this.list.unshift(temp)
             this.creatOrderVisible = false
             this.$notify({
               title: 'Success',
@@ -415,7 +461,7 @@ export default {
     },
     handleFetchPv(pv) {
       fetchPv(pv).then(response => {
-        this.pvData = response.data.pvData
+        this.newOrderData = response.data.newOrderData
         this.creatOrderVisible = true
       })
     },
