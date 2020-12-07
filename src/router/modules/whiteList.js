@@ -14,7 +14,8 @@ const whiteList = [
   '/form',
   '/form/index',
   '/nested',
-  '/order/search'
+  '/order/search',
+  '/phoneLogin'
 ] // no redirect whitelist
 
 export default whiteList

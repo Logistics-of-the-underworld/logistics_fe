@@ -13,7 +13,7 @@
         <el-input
           ref="username"
           v-model="loginForm.username"
-          placeholder="Username"
+          placeholder="Phone"
           name="username"
           type="text"
           tabindex="1"
@@ -21,29 +21,20 @@
         />
       </el-form-item>
 
-      <el-form-item prop="password">
+      <el-form-item prop="password" style="display: inline-block;width: 70%">
         <span class="svg-container">
           <svg-icon icon-class="password" />
         </span>
         <el-input
-          :key="passwordType"
-          ref="password"
-          v-model="loginForm.password"
-          :type="passwordType"
-          placeholder="Password"
-          name="password"
-          tabindex="2"
-          auto-complete="on"
-          @keyup.enter.native="handleLogin"
+          v-model="loginForm.code"
+          placeholder="Code"
+          style="display: inline-block;"
         />
-        <span class="show-pwd" @click="showPwd">
-          <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
-        </span>
       </el-form-item>
+      <el-button :disabled="this.isDisable" type="primary" @click.native.prevent="getPhoneCode" round style="display: inline-block;width: 25%;float: right;margin-top: 7px">{{ getButtonTest }}</el-button>
+      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;margin-left: -1px" @click.native.prevent="handleLogin">Login</el-button>
 
-      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">Login</el-button>
-
-      <router-link to="/phoneLogin" style="color: gray">使用手机短信进行登录</router-link>
+      <router-link to="/login" style="color: gray">使用用户名密码进行登录</router-link>
 
     </el-form>
   </div>
@@ -51,8 +42,10 @@
 
 <script>
 
+import { getPhoneCode } from '@/api/user'
+
 export default {
-  name: 'Login',
+  name: 'PhoneLogin',
   data() {
     const validatePassword = (rule, value, callback) => {
       if (value.length < 6) {
@@ -63,8 +56,8 @@ export default {
     }
     return {
       loginForm: {
-        username: 'root',
-        password: '123456'
+        username: '',
+        code: ''
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur', message: '请输入正确的用户名' }],
@@ -72,7 +65,10 @@ export default {
       },
       loading: false,
       passwordType: 'password',
-      redirect: undefined
+      redirect: undefined,
+      getButtonTest: '获取验证码',
+      second: 60,
+      isDisable: false
     }
   },
   watch: {
@@ -84,21 +80,29 @@ export default {
     }
   },
   methods: {
-    showPwd() {
-      if (this.passwordType === 'password') {
-        this.passwordType = ''
-      } else {
-        this.passwordType = 'password'
-      }
-      this.$nextTick(() => {
-        this.$refs.password.focus()
+    getPhoneCode() {
+      const that = this
+      getPhoneCode({ 'phone': this.loginForm.username }).then(resp => {
+        this.$message.success(resp.message)
       })
+      that.isDisabled = true
+      const interval = window.setInterval(function() {
+        that.isDisabled = true
+        that.getButtonTest = '(' + that.second + '秒)后重发'
+        --that.second
+        if (that.second < 0) {
+          that.getButtonTest = '重新发送'
+          that.second = 60
+          that.isDisabled = false
+          window.clearInterval(interval)
+        }
+      }, 1000)
     },
     handleLogin() {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
-          this.$store.dispatch('user/login', this.loginForm).then(() => {
+          this.$store.dispatch('user/loginByPhone', this.loginForm).then(() => {
             this.$router.push({ path: this.redirect || '/' })
             this.loading = false
           }).catch(() => {

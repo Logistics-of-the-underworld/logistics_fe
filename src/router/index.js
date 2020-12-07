@@ -14,6 +14,7 @@ import { customerRouter } from '@/router/modules/customerRouter'
 import { distributionRouter } from '@/router/modules/distributionRouter'
 import { handoverRouter } from '@/router/modules/handoverRouter'
 import { reportRouter } from '@/router/modules/reportRouter'
+import { companyRouter } from '@/router/modules/CompanyRouter'
 
 /**
  * Note: sub-menu only appear when route children.length >= 1
@@ -45,7 +46,11 @@ export const constantRoutes = [
     component: () => import('@/views/login/index'),
     hidden: true
   },
-
+  {
+    path: '/phoneLogin',
+    component: () => import('@/views/login/phoneLogin'),
+    hidden: true
+  },
   {
     path: '/404',
     component: () => import('@/views/404'),
@@ -60,7 +65,7 @@ export const constantRoutes = [
       path: 'dashboard',
       name: 'Dashboard',
       component: () => import('@/views/dashboard/index'),
-      meta: { title: 'Dashboard', icon: 'dashboard' }
+      meta: { title: '首页', icon: 'dashboard' }
     }]
   },
 
@@ -70,18 +75,21 @@ export const constantRoutes = [
     redirect: '/example/table',
     name: 'Example',
     meta: { title: 'Example', icon: 'el-icon-s-help' },
+    hidden: true,
     children: [
       {
         path: 'table',
         name: 'Table',
         component: () => import('@/views/table/index'),
-        meta: { title: 'Table', icon: 'table' }
+        meta: { title: 'Table', icon: 'table' },
+        hidden: true
       },
       {
         path: 'tree',
         name: 'Tree',
         component: () => import('@/views/tree/index'),
-        meta: { title: 'Tree', icon: 'tree' }
+        meta: { title: 'Tree', icon: 'tree' },
+        hidden: true
       }
     ]
   },
@@ -94,7 +102,8 @@ export const constantRoutes = [
         path: 'index',
         name: 'Form',
         component: () => import('@/views/form/index'),
-        meta: { title: 'Form', icon: 'form' }
+        meta: { title: 'Form', icon: 'form' },
+        hidden: true
       }
     ]
   },
@@ -108,6 +117,7 @@ export const constantRoutes = [
       title: 'Nested',
       icon: 'nested'
     },
+    hidden: true,
     children: [
       {
         path: 'menu1',
@@ -183,6 +193,7 @@ export const asyncRoutes = [
   handoverRouter,
   routeRouter,
   reportRouter,
+  companyRouter,
   userRouter,
   customerRouter,
   // 404 page must be placed at the end !!!

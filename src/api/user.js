@@ -81,3 +81,19 @@ export function register(data) {
     data
   })
 }
+
+export function getPhoneCode(data) {
+  return request({
+    url: '/auth/getPhoneLoginCode',
+    method: 'post',
+    data
+  })
+}
+
+export function loginByPhone(data) {
+  return request({
+    url: '/auth/loginByPhone',
+    method: 'post',
+    data
+  })
+}

@@ -9,7 +9,7 @@
     <div class="right-menu">
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
-          <img :src="this.$store.getters.icon === undefined ? 'http://182.92.208.18:9000/project/20201009/8fab328f-b607-43b7-be19-c3e7e337d9e3' : this.$store.getters.icon" class="user-avatar">
+          <img :src="this.$store.getters.icon.length === 0 ? src : this.$store.getters.icon" class="user-avatar">
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
@@ -51,6 +51,11 @@ export default {
     ]),
     logInorOut() {
       return this.token ? 'Log Out' : 'Log In'
+    }
+  },
+  data() {
+    return {
+      src: 'https://uploadfiles.nowcoder.com/images/20200722/999991366_1595391190758_57EEEB00EBAABFD5FC69110680582263?x-oss-process=image%2Fresize%2Cm_mfit%2Cw_550%2Ch_550'
     }
   },
   methods: {
