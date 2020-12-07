@@ -88,7 +88,7 @@
     </div>
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
 
-    <el-dialog title="更新订单信息" :visible.sync="dialogFormVisible">
+    <el-dialog title="更新订单信息" :visible.sync="dialogFormVisible" width="800px">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="180px" style="width: 400px; margin-left:50px;">
         <el-form-item label="订单编号" prop="idOrder">
           <el-input v-model="temp.idOrder" :disabled="'update' === dialogStatus" />
@@ -145,8 +145,8 @@
       </div>
     </el-dialog>
 
-    <el-dialog :visible.sync="creatOrderVisible" title="新建订单">
-      <el-form ref="orderForm" :rules="rules" :model="newOrderData" label-position="left" label-width="120px" style="width: 400px; margin-left:50px;">
+    <el-dialog :visible.sync="creatOrderVisible" title="新建订单" width="800px">
+      <el-form ref="orderForm" :rules="rules" :model="newOrderData" label-position="left" label-width="120px" style="width: 400px; margin:50px auto;">
         <el-form-item label="寄件人姓名" prop="senderName">
           <el-input v-model="newOrderData.senderName" />
         </el-form-item>
