@@ -13,7 +13,7 @@
         查询
       </el-button>
       <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
-        新建
+        创建订单
       </el-button>
       <el-button v-if="this.username !== ''" v-waves :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">
         导出
@@ -338,11 +338,13 @@ export default {
       })
     },
     handleFilter() {
-      if (this.listQuery.idOrder) {
-        this.getOne()
-      } else {
-        this.listQuery.page = 1
-        this.getList()
+      if (this.username !== '') {
+        if (this.listQuery.idOrder) {
+          this.getOne()
+        } else {
+          this.listQuery.page = 1
+          this.getList()
+        }
       }
     },
     async getOne() {
@@ -400,6 +402,9 @@ export default {
       }
     },
     handleCreate() {
+      if (this.username === '') {
+        this.$router.replace('/login')
+      }
       this.restOderTemp()
       this.creatOrderVisible = true
       this.$nextTick(() => {
