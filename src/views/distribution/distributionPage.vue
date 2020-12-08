@@ -213,6 +213,7 @@ export default {
   },
   created() {
     this.getDistribution()
+    console.log(123)
   },
   methods: {
     EditTableColumn(row, column, cell, event) {
@@ -238,9 +239,10 @@ export default {
     async getDistribution() {
       this.loading = true
       let parmas
-      if (this.roles[0] === 'admin' && this.roles[1] === 'distribution') {
-        parmas = this.name_company
+      if (JSON.parse(this.roles)[1] === 'admin') {
+        parmas = this.$store.getters.organizationName
       }
+      console.log(parmas)
       await fetchList(parmas || 'no').then(res => {
         this.tableData = res.data
         this.tableData = this.tableData.map(v => {
