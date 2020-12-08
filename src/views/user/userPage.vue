@@ -19,10 +19,16 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="用户激活状态">
+      <el-table-column
+        align="center"
+        label="用户激活状态"
+        :filters="[{ text: '已入职', value: '0' }, { text: '待确认', value: '1' }, { text: '已拒绝', value: '2'}]"
+        :filter-method="filterTag"
+        filter-placement="bottom-end">
         <template slot-scope="{row}">
-          <span v-if="row.ban.toString() === '0'">已激活</span>
-          <span v-if="row.ban.toString() !== '0'">未激活</span>
+          <span v-if="row.ban.toString() === '0'">已入职</span>
+          <span v-if="row.ban.toString() === '1'">待确认</span>
+          <span v-if="row.ban.toString() === '2'">已拒绝</span>
         </template>
       </el-table-column>
 
@@ -89,7 +95,7 @@ import { parseTime } from '@/utils'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import { fetchList, addRoute, updateRoute, deleteRoute } from '../../api/route'
-import { changeRole, deleteAuth, getAuth, getAuthByOrg, getRoleByIdentity } from '@/api/user'
+import { changeRole, deleteAuth, getAuth, getAuthByOrg, getByOrgStandBy, getRoleByIdentity } from '@/api/user'
 
 export default {
   name: 'ViewsPage',
@@ -127,7 +133,9 @@ export default {
       },
       options: [],
       tempRow: undefined,
-      reason: undefined
+      reason: undefined,
+      flag: false,
+      refluse: false
     }
   },
   created() {
@@ -165,6 +173,9 @@ export default {
         this.$message.success('解聘成功')
         this.getList()
       })
+    },
+    filterTag(value, row) {
+      return row.ban === value
     },
     handleCreate() {
       this.resetTemp()

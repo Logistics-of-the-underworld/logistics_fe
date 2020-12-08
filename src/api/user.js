@@ -97,3 +97,11 @@ export function loginByPhone(data) {
     data
   })
 }
+
+export function getByOrgStandBy(data) {
+  return request({
+    url: `/auth/manage/getAuthByOrganizationStandBy/${data.org}/${data.size}/${data.current}/${data.ban}/${data.isdelete}`,
+    method: 'get',
+    data
+  })
+}
