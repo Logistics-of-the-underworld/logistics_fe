@@ -1,68 +1,53 @@
 <template>
   <div class="app-container" style="height: 100%">
+    <div class="filter-container">
+      <el-input v-model="listQuery.idCompany" placeholder="公司编号" style="width: 180px;margin-right:12px" class="filter-item" @keyup.enter.native="handleFilter" />
+      <el-input v-model="listQuery.nameCompany" placeholder="公司名" style="width: 180px;margin-right:12px" class="filter-item" @keyup.enter.native="handleFilter" />
+
+      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
+        查询
+      </el-button>
+    </div>
     <el-table v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%;">
-      <el-table-column align="center" label="用户名">
+      <el-table-column align="center" label="公司编号">
         <template slot-scope="{row}">
-          <span>{{ row.username }}</span>
+          <span>{{ row.idCompany }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="用户昵称">
+      <el-table-column align="center" label="公司名">
         <template slot-scope="{row}">
-          <span>{{ row.petname }}</span>
+          <span>{{ row.nameCompany }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="联系方式">
+      <el-table-column align="center" label="创建时间">
         <template slot-scope="{row}">
-          <span v-if="row.phone != undefined && row.phone.length > 0">{{ row.phone }}</span>
-          <span v-if="row.email != undefined && row.email.length > 0">{{ row.email }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column align="center" label="用户激活状态">
-        <template slot-scope="{row}">
-          <span v-if="row.ban.toString() === '0'">已激活</span>
-          <span v-if="row.ban.toString() !== '0'">未激活</span>
+          <span>{{ dayjs(row.createTime).format('YYYY-MM-DD HH:mm') }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="用户权限">
+      <el-table-column align="center" label="公司具备的配送点数量">
         <template slot-scope="{row}">
-          <span>{{ row.role.note }}</span>
+          <span>{{ row.disTotal }}</span>
         </template>
       </el-table-column>
 
       <el-table-column align="center" label="操作" width="260px">
         <template slot-scope="{row}">
           <el-button type="primary" size="mini" @click="handleUpdate(row)">
-            更换权限
+            委派管理者
           </el-button>
           <el-button size="mini" type="danger" @click="handleDelete(row)">
-            离职处理
+            移出集团
           </el-button>
         </template>
       </el-table-column>
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
 
-    <el-dialog title="权限更换" :visible.sync="dialogFormVisible" center width="500px">
+    <el-dialog title="委派管理者" :visible.sync="dialogFormVisible" center width="600px">
 
-      <el-select v-model="value" placeholder="请选择" style="margin-left: 120px">
-        <el-option
-          v-for="item in options"
-          :key="item.idTbRole"
-          :label="item.note"
-          :value="item.idTbRole">
-        </el-option>
-      </el-select>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">
-          取消
-        </el-button>
-        <el-button type="primary" @click="updateData()">
-          确认
-        </el-button>
-      </div>
+      <add-user-page :org="orgname"/>
 
     </el-dialog>
 
@@ -88,12 +73,14 @@
 import { parseTime } from '@/utils'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+import addUserPage from '@/views/user/addUserPage'
 import { fetchList, addRoute, updateRoute, deleteRoute } from '../../api/route'
 import { changeRole, deleteAuth, getAuth, getAuthByOrg, getRoleByIdentity } from '@/api/user'
+import { deleteCompany, getCompany } from '@/api/company'
 
 export default {
   name: 'CompanyPage',
-  components: { Pagination },
+  components: { Pagination, addUserPage },
   directives: { waves },
   data() {
     return {
@@ -106,11 +93,9 @@ export default {
         page: 1,
         limit: 10,
         // 起始点站点编码
-        start_distribution: undefined,
+        idCompany: undefined,
         // 终点配送点编码
-        end_distribution: undefined,
-        // 路线ID
-        id_line: undefined
+        nameCompany: undefined
       },
       dialogStatus: '',
       dialogFormVisible: false,
@@ -127,7 +112,8 @@ export default {
       },
       options: [],
       tempRow: undefined,
-      reason: undefined
+      reason: undefined,
+      orgname: undefined
     }
   },
   created() {
@@ -140,18 +126,13 @@ export default {
       this.getList()
     },
     async getList() {
-      if (JSON.parse(this.$store.getters.roles)[0].toString() === 'admin') {
-        getAuth(this.listQuery.limit, this.listQuery.page).then(resp => {
-          this.list = resp.userList
-          this.total = resp.total
-        })
-      } else {
-        getAuthByOrg(this.$store.getters.organizationName, this.listQuery.limit, this.listQuery.page).then(resp => {
-          this.list = resp.userList
-          this.total = resp.total
-        })
-      }
       this.listLoading = true
+
+      getCompany(this.listQuery).then(resp => {
+        this.list = resp.data
+        this.total = resp.total
+      })
+
       this.listLoading = false
     },
     async getRoleList() {
@@ -193,8 +174,10 @@ export default {
       })
     },
     handleDelete(row) {
-      this.deleteFlag = true
-      this.tempRow = row
+      deleteCompany(row.idCompany).then(resp => {
+        this.$message.success('操作成功！')
+        this.getList()
+      })
     },
     deleteData(row) {
       return deleteRoute(row)
@@ -202,6 +185,7 @@ export default {
     handleUpdate(row) {
       this.tempRow = row
       this.dialogFormVisible = true
+      this.orgname = row.nameCompany
     },
     updateData() {
       changeRole({ 'roleId': this.value, 'targetUser': this.tempRow.idTbUser }).then(resp => {
