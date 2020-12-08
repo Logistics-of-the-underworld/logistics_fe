@@ -26,7 +26,11 @@ import { register } from '@/api/user'
 
 export default {
   name: 'AddUserPage',
-
+  props: {
+    org: {
+      type: String
+    }
+  },
   data() {
     return {
       ruleForm: {
@@ -55,6 +59,9 @@ export default {
       this.organization = undefined
     } else {
       this.organization = this.$store.getters.organizationName
+    }
+    if (this.org !== undefined) {
+      this.organization = this.org
     }
     console.log(this.organization)
   },

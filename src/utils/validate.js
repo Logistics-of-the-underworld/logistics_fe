@@ -4,6 +4,7 @@
 
 import el from 'element-ui/src/locale/lang/el'
 import { verifyEmail, verifyUsername } from '@/api/user'
+import { verifyCompanyName } from '@/api/company'
 
 /**
  * @param {string} path
@@ -83,6 +84,16 @@ export function validName(role, value, callback) {
       callback(new Error('用户名已被占用'))
     } else {
       callback()
+    }
+  })
+}
+
+export function validCompanyName(role, value, callback) {
+  verifyCompanyName({ companyName: value }).then(resp => {
+    if (resp.message) {
+      callback()
+    } else {
+      callback(new Error('公司名已被占用'))
     }
   })
 }
