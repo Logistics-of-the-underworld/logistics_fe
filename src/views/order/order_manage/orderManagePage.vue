@@ -278,13 +278,12 @@ export default {
         this.$refs['dataForm'].clearValidate()
       })
     },
-    updateData() {
+    async updateData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           const tempData = Object.assign({}, this.temp)
           updateOrder({ order: tempData }).then(() => {
-            const index = this.list.findIndex(v => v.idTpOrder === this.temp.idTpOrder)
-            this.list.splice(index, 1, tempData)
+            this.getList()
             this.dialogFormVisible = false
             this.$notify({
               title: 'Success',
