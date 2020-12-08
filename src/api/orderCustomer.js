@@ -8,6 +8,12 @@ export function fetchList(query) {
   })
 }
 
+export function getOne(query) {
+  return request({
+    url: `/orderUser/getOrderByID/${query}`,
+    method: 'get'
+  })
+}
 export function createOrder(params) {
   return request({
     url: '/orderUser/createOrder',

@@ -1,6 +1,7 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
+      <el-input v-model="listQuery.idOrder" placeholder="订单号" style="width: 200px;margin-right:12px" class="filter-item" @keyup.enter.native="handleFilter" />
       <el-input v-model="listQuery.receiverAddress" placeholder="收寄地" style="width: 200px;margin-right:12px" class="filter-item" @keyup.enter.native="handleFilter" />
       <el-select v-model="listQuery.importance" placeholder="用户评价" clearable style="width: 120px;margin-right:12px" class="filter-item">
         <el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item" />
@@ -14,7 +15,7 @@
       <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
         新建
       </el-button>
-      <el-button v-waves :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">
+      <el-button v-if="this.username !== ''" v-waves :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">
         导出
       </el-button>
       <el-checkbox v-model="showReviewer" class="filter-item" style="margin-left:15px;margin-right:12px" @change="tableKey=tableKey+1">
@@ -96,23 +97,27 @@
         <el-form-item label="配送时间" prop="deliveryTime">
           <el-input v-model="temp.deliveryTime" :disabled="'update' === dialogStatus" />
         </el-form-item>
-        <el-form-item label="条形码" prop="barCodeUrl">
-          <el-input v-model="temp.barCodeUrl" :disabled="'update' === dialogStatus" />
+        <el-form-item v-if="1 <= temp.stateOrder" label="条形码" prop="barCodeUrl">
+          <el-image :src="temp.barCodeUrl">
+            <div slot="placeholder" class="image-slot">
+              加载中<span class="dot">...</span>
+            </div>
+          </el-image>
         </el-form-item>
         <el-form-item label="配送车辆" prop="idLicense">
           <el-input v-model="temp.idLicense" :disabled="'update' === dialogStatus" />
         </el-form-item>
         <el-form-item label="寄件人姓名" prop="senderName">
-          <el-input v-model="temp.senderName" :disabled="'未处理' !== orderStateTypeKeyValue[temp.stateOrder]"/>
+          <el-input v-model="temp.senderName" :disabled="'未处理' !== orderStateTypeKeyValue[temp.stateOrder]" />
         </el-form-item>
         <el-form-item label="寄件人电话" prop="senderPhone">
-          <el-input v-model="temp.senderPhone" :disabled="'未处理' !== orderStateTypeKeyValue[temp.stateOrder]"/>
+          <el-input v-model="temp.senderPhone" :disabled="'未处理' !== orderStateTypeKeyValue[temp.stateOrder]" />
         </el-form-item>
         <el-form-item label="收件人姓名" prop="receiverName">
-          <el-input v-model="temp.receiverName" :disabled="'未处理' !== orderStateTypeKeyValue[temp.stateOrder]"/>
+          <el-input v-model="temp.receiverName" :disabled="'未处理' !== orderStateTypeKeyValue[temp.stateOrder]" />
         </el-form-item>
         <el-form-item label="收件人电话" prop="receiverPhone">
-          <el-input v-model="temp.receiverPhone" :disabled="'未处理' !== orderStateTypeKeyValue[temp.stateOrder]"/>
+          <el-input v-model="temp.receiverPhone" :disabled="'未处理' !== orderStateTypeKeyValue[temp.stateOrder]" />
         </el-form-item>
         <el-form-item label="订单状态" prop="stateOrder">
           <el-select v-model="temp.stateOrder" class="filter-item" placeholder="Please select" :disabled="'update' === dialogStatus">
@@ -175,7 +180,7 @@
           <el-input v-model="newOrderData.idSortGoods" />
         </el-form-item>
         <el-form-item v-if="newOrderData.deliveryPrice" label="配送价格" prop="deliveryPrice">
-          <el-input v-model="newOrderData.deliveryPrice" disabled/>
+          <el-input v-model="newOrderData.deliveryPrice" disabled />
         </el-form-item>
         <el-form-item label="支付方式" prop="paymentMethod">
           <el-select v-model="newOrderData.paymentMethod" class="filter-item" placeholder="请选择">
@@ -183,7 +188,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="备注" prop="marks">
-          <el-input v-model="newOrderData.marks"/>
+          <el-input v-model="newOrderData.marks" />
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -201,7 +206,7 @@ import { fetchPv } from '@/api/article'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import { fetchList, createOrder, updateOrder, deleteOrder } from '@/api/orderCustomer'
+import { fetchList, createOrder, updateOrder, getOne } from '@/api/orderCustomer'
 import { mapGetters } from 'vuex'
 const paymentMethodStateOptions = [
   { key: 0, display_name: '在线支付' },
@@ -245,13 +250,14 @@ export default {
       tableKey: 0,
       list: undefined,
       total: 0,
-      listLoading: true,
+      listLoading: false,
       orderStateOptions,
       paymentMethodStateOptions,
       orderStateTypeKeyValue,
       listQuery: {
         page: 1,
         limit: 20,
+        idOrder: undefined,
         importance: undefined,
         receiverAddress: undefined,
         stateOrder: undefined
@@ -314,7 +320,9 @@ export default {
     ])
   },
   created() {
-    this.getList()
+    if (this.username !== '') {
+      this.getList()
+    }
   },
   methods: {
     async getList() {
@@ -331,8 +339,24 @@ export default {
       })
     },
     handleFilter() {
-      this.listQuery.page = 1
-      this.getList()
+      if (this.listQuery.idOrder) {
+        this.getOne()
+      } else {
+        this.listQuery.page = 1
+        this.getList()
+      }
+    },
+    async getOne() {
+      this.listLoading = true
+      await getOne(this.listQuery.idOrder).then(res => {
+        this.list = []
+        this.list.push(res.data)
+        this.list = this.list.map(v => {
+          v.createTime = this.dayjs(v.createTime).format('YYYY-MM-DD HH:mm')
+          return v
+        })
+      })
+      this.listLoading = false
     },
     handleModifyStatus(row, status) {
       this.$message({
@@ -432,11 +456,12 @@ export default {
       })
     },
     handleDelete(row, index) {
+      row.stateOrder = 7
       this.deleteData(row).then(res => {
         if (res.code === 20000) {
           this.$notify({
             title: 'Success',
-            message: 'Delete Successfully',
+            message: '退订成功',
             type: 'success',
             duration: 2000
           })
@@ -445,7 +470,7 @@ export default {
       })
     },
     deleteData(row) {
-      return deleteOrder(row.idOrder)
+      return updateOrder({ order: row })
     },
     handleFetchPv(pv) {
       fetchPv(pv).then(response => {

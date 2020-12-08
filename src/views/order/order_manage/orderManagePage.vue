@@ -79,7 +79,7 @@
           <el-button type="primary" size="mini" @click="handleUpdate(row)">
             查看
           </el-button>
-          <el-button v-if="row.status!='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
+          <el-button v-if="row.stateOrder === 7" size="mini" type="danger" @click="handleDelete(row,$index)">
             删除
           </el-button>
         </template>
@@ -288,7 +288,7 @@ export default {
             this.dialogFormVisible = false
             this.$notify({
               title: 'Success',
-              message: 'Update Successfully',
+              message: '更新成功',
               type: 'success',
               duration: 2000
             })
@@ -300,7 +300,7 @@ export default {
       this.deleteData(row).then(res => {
         this.$notify({
           title: 'Success',
-          message: 'Delete Successfully',
+          message: '删除订单成功',
           type: 'success',
           duration: 2000
         })
