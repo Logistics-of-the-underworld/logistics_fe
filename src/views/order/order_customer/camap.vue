@@ -55,7 +55,6 @@ const amapManager = new AMapManager()
 export default {
   name: 'OrderCamap',
   data() {
-    const self = this
     return {
       zoom: 6,
       center: [117.031803, 32.622703],
@@ -66,40 +65,6 @@ export default {
             // self.initSearch()
           })
         }
-        // 点击获取地址的数据
-        // click(e) {
-        //   const { lng, lat } = e.lnglat
-        //   self.lng = lng
-        //   self.lat = lat
-        //   self.center = [lng, lat]
-        //   // 这里通过高德 SDK 完成。
-        //   const geocoder = new AMap.Geocoder({
-        //     radius: 1000,
-        //     extensions: 'all'
-        //   })
-        //   geocoder.getAddress([lng, lat], function(status, result) {
-        //     if (status === 'complete' && result.info === 'OK') {
-        //       if (result && result.regeocode) {
-        //         self.address = result.regeocode.formattedAddress
-        //         self.searchKey = result.regeocode.formattedAddress
-        //         const mark = {
-        //           position: self.center,
-        //           visible: true,
-        //           draggable: false,
-        //           offset: [0, 0],
-        //           label: {
-        //             content: self.address,
-        //             offset: [6, 40]
-        //           }
-        //         }
-        //         const newMarkers = []
-        //         newMarkers.push(mark)
-        //         self.amap_marksers = newMarkers
-        //         self.$nextTick()
-        //       }
-        //     }
-        //   })
-        // }
       },
       // 一些工具插件
       plugin: [
@@ -140,16 +105,6 @@ export default {
           pName: 'Driving',
           events: {
             init(o) {
-              o.search(new AMap.LngLat(self.markers[0].position[0], self.markers[0].position[1]),
-                new AMap.LngLat(self.markers[1].position[0], self.markers[1].position[1]),
-                (status, result) => {
-                  if (status === 'complete') {
-                    self.searchRoute(result)
-                    self.initRoute()
-                  } else {
-                    console.log('获取驾车数据失败')
-                  }
-                })
             }
           }
         }
@@ -196,7 +151,34 @@ export default {
       path: []
     }
   },
+  mounted() {
+    this.getData()
+  },
   methods: {
+    async getData() {
+      this.pathPlanning()
+    },
+    pathPlanning() {
+      const self = this
+      const Driving = new AMap.Driving({
+        hideMarkers: true,
+        showTraffic: false,
+        isOutline: true
+      })
+      Driving.search([117.031803, 32.622703], [116.342058, 32.614061], (status, result) => {
+        if (status === 'complete') {
+          self.searchRoute(result)
+        } else {
+          console.log('获取驾车数据失败')
+        }
+      })
+      setTimeout(() => {
+        self.initRoute()
+        self.loaded = false
+      }, 800)
+      // 页面渲染好后
+      self.$nextTick()
+    },
     searchRoute(result) {
       const temp = {
         path: [
@@ -213,7 +195,6 @@ export default {
           }
         })
       })
-      console.log(this.path)
       this.path.push(temp)
     },
     initRoute() {
@@ -241,13 +222,6 @@ export default {
             return '点数量' + pathData.path.length
           }
         })
-        // console.log(vm.path)
-        // // 创建巡航器
-        // var pathNavigator = pathSimplifierIns.createPathNavigator(0, {
-        //   loop: false, // 是否循环
-        //   speed: 5000 // 速度(km/h)
-        // })
-        // pathNavigator.start()
       })
     }
   }

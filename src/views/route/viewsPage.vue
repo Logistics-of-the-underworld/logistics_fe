@@ -171,10 +171,10 @@ export default {
         create: '新建路线'
       },
       rules: {
-        idLine: [{ required: true, message: 'id_line is required', trigger: 'blur' }],
-        driverName: [{ required: true, message: 'driver_name is required', trigger: 'blur' }],
-        startDistribution: [{ required: true, message: 'start_distribution is required', trigger: 'blur' }],
-        endDistribution: [{ required: true, message: 'end_distribution is required', trigger: 'blur' }]
+        idLine: [{ required: true, message: '路线ID是必须的', trigger: 'blur' }],
+        driverName: [{ required: true, message: '司机是必须的', trigger: 'blur' }],
+        startDistribution: [{ required: true, message: '起始站点ID是必须的', trigger: 'blur' }],
+        endDistribution: [{ required: true, message: '终点站点ID是必须的', trigger: 'blur' }]
       }
     }
   },
@@ -224,7 +224,7 @@ export default {
         if (res.code === 20000) {
           this.$notify({
             title: 'Success',
-            message: 'Delete Successfully',
+            message: '删除成功',
             type: 'success',
             duration: 2000
           })
@@ -253,7 +253,7 @@ export default {
             this.list.splice(index, 1, this.temp)
             this.$notify({
               title: 'Success',
-              message: 'Update Successfully',
+              message: '更新成功',
               type: 'success',
               duration: 2000
             })
