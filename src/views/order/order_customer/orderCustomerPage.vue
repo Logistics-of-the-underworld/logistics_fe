@@ -334,7 +334,6 @@ export default {
           v.createTime = this.dayjs(v.createTime).format('YYYY-MM-DD HH:mm')
           return v
         })
-        console.log(this.list)
         this.listLoading = false
       })
     },
@@ -416,7 +415,6 @@ export default {
           createOrder({ order: this.newOrderData }).then(() => {
             const temp = Object.assign(this.temp, this.newOrderData)
             temp.createTime = new Date()
-            console.log(temp)
             this.list.unshift(temp)
             this.creatOrderVisible = false
             this.$notify({
