@@ -212,6 +212,7 @@ export default {
               type: 'success',
               duration: 2000
             })
+            this.dialogFormVisible = false
           })
         }
       })
@@ -244,8 +245,7 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           const tempData = Object.assign({}, this.temp)
-          tempData.timestamp = +new Date(tempData.timestamp) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
-          updateRoute(tempData).then(() => {
+          updateRoute({ lineInfo: tempData }).then(() => {
             const index = this.list.findIndex(v => v.idLline === this.temp.idLline)
             this.list.splice(index, 1, this.temp)
             this.$notify({
@@ -254,6 +254,7 @@ export default {
               type: 'success',
               duration: 2000
             })
+            this.dialogFormVisible = false
           })
         }
       })
