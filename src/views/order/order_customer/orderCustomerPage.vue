@@ -429,7 +429,6 @@ export default {
         if (valid) {
           this.newOrderData.idOrder = 'BZX' + parseInt(Math.random() * 1000) + 1024 // mock a id
           this.newOrderData.idGoods = 'ZXC' + parseInt(Math.random() * 1000) + 1024 // mock a id
-          this.newOrderData.deliveryPrice = 20.00
           createOrder({ order: this.newOrderData }).then(() => {
             const temp = Object.assign(this.temp, this.newOrderData)
             temp.createTime = new Date()

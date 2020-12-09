@@ -14,6 +14,14 @@ export function getOne(query) {
     method: 'get'
   })
 }
+
+export function getPrice(params) {
+  return request({
+    url: '/orderUser/getAllOrder',
+    method: 'post',
+    params: params
+  })
+}
 export function createOrder(params) {
   return request({
     url: '/orderUser/createOrder',
