@@ -88,16 +88,13 @@
 
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
 
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" style="width: 1200px;margin: 0 auto;">
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" width="600px" style="width: 100%;margin: 0 auto;">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="110px" style="width: 400px; margin-left:50px;">
-        <el-form-item label="寄件人姓名" prop="senderName">
-          <el-input v-model="temp.senderName" disabled/>
-        </el-form-item>
         <el-form-item label="收件人姓名" prop="receiverName">
-          <el-input v-model="temp.receiverName" disabled/>
+          <el-input v-model="temp.receiverName" disabled />
         </el-form-item>
         <el-form-item label="配送价格" prop="deliveryPrice">
-          <el-input v-model="temp.deliveryPrice" disabled/>
+          <el-input v-model="temp.deliveryPrice" disabled />
         </el-form-item>
         <el-form-item label="支付方式" prop="paymentMethod">
           <el-input v-model="temp.paymentMethod" disabled />
@@ -118,7 +115,10 @@
           <el-input v-model="temp.idLicense" />
         </el-form-item>
         <el-form-item label="配送站点编号" prop="idDistribution">
-          <el-input v-model="temp.idDistribution" />
+          <el-input v-model.number="temp.idDistribution" />
+        </el-form-item>
+        <el-form-item v-if="heaveVisible" label="货物重量">
+          <el-input v-model="tempGoods.heavy" />
         </el-form-item>
         <el-form-item label="审核人" prop="reviewer">
           <el-input v-model="temp.reviewer" />
@@ -216,7 +216,11 @@ export default {
         idLicense: undefined,
         paymentMethod: undefined
       },
+      tempGoods: {
+        heavy: undefined
+      },
       dialogFormVisible: false,
+      heaveVisible: true,
       dialogStatus: '',
       textMap: {
         update: '订单详细'
@@ -274,6 +278,8 @@ export default {
       this.temp = Object.assign({}, row) // copy obj
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
+      this.tempGoods.heavy = undefined
+      this.heaveVisible = !(row.stateOrder > 0)
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })
@@ -282,7 +288,7 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           const tempData = Object.assign({}, this.temp)
-          updateOrder({ order: tempData }).then(() => {
+          updateOrder({ order: tempData, heavy: this.tempGoods.heavy }).then(() => {
             this.getList()
             this.dialogFormVisible = false
             this.$notify({
