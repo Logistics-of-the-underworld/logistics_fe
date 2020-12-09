@@ -224,7 +224,7 @@ export default {
       dialogPvVisible: false,
       pvData: [],
       rules: {
-        idDistribution: [{ required: true, message: '配送点编号是必须的', trigger: 'blur' }],
+        idDistribution: [{ type: 'number', required: true, message: '必须是3位的数字', trigger: 'blur' }],
         reviewer: [{ required: true, message: '审核人是必须的', trigger: 'blur' }]
       },
       downloadLoading: false

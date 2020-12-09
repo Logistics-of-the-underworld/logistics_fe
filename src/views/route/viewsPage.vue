@@ -98,9 +98,6 @@
         <el-form-item label="终点纬度" prop="endLatitude">
           <el-input v-model="temp.endLatitude" />
         </el-form-item>
-        <el-form-item label="运费" prop="cost">
-          <el-input v-model="temp.cost" />
-        </el-form-item>
         <el-form-item v-if="'update' === dialogStatus" label="负责司机" prop="driverName">
           <el-input v-model="temp.driverName" />
         </el-form-item>
@@ -174,7 +171,7 @@ export default {
         idLine: [{ required: true, message: '路线ID是必须的', trigger: 'blur' }],
         driverName: [{ required: true, message: '司机是必须的', trigger: 'blur' }],
         startDistribution: [{ required: true, message: '起始站点ID是必须的', trigger: 'blur' }],
-        endDistribution: [{ required: true, message: '终点站点ID是必须的', trigger: 'blur' }]
+        endDistribution: [{ required: true, message: '终点站点ID是必须的', trigger: 'blur' }],
       }
     }
   },

@@ -156,7 +156,7 @@
           <el-input v-model="newOrderData.senderName" />
         </el-form-item>
         <el-form-item label="寄件人电话" prop="senderPhone">
-          <el-input v-model="newOrderData.senderPhone" />
+          <el-input v-model.number="newOrderData.senderPhone" />
         </el-form-item>
         <el-form-item label="寄件人地址" prop="senderAddress">
           <el-input v-model="newOrderData.senderAddress" />
@@ -165,19 +165,21 @@
           <el-input v-model="newOrderData.receiverName" />
         </el-form-item>
         <el-form-item label="收件人电话" prop="receiverPhone">
-          <el-input v-model="newOrderData.receiverPhone" />
+          <el-input v-model.number="newOrderData.receiverPhone" />
         </el-form-item>
-        <el-form-item label="寄件人地址" prop="receiverAddress">
+        <el-form-item label="收件人地址" prop="receiverAddress">
           <el-input v-model="newOrderData.receiverAddress" />
         </el-form-item>
         <el-form-item label="物品名称" prop="nameGoods">
           <el-input v-model="newOrderData.nameGoods" />
         </el-form-item>
         <el-form-item label="物品数量" prop="countGoods">
-          <el-input v-model="newOrderData.countGoods" />
+          <el-input v-model.number="newOrderData.countGoods" />
         </el-form-item>
         <el-form-item label="物品类别" prop="idSortGoods">
-          <el-input v-model="newOrderData.idSortGoods" />
+          <el-select v-model="newOrderData.idSortGoods" class="filter-item" placeholder="请选择">
+            <el-option v-for="item in goodsSortStateOption" :key="item.display_name" :label="item.display_name" :value="item.key" />
+          </el-select>
         </el-form-item>
         <el-form-item v-if="newOrderData.deliveryPrice" label="配送价格" prop="deliveryPrice">
           <el-input v-model="newOrderData.deliveryPrice" disabled />
@@ -211,6 +213,12 @@ import { mapGetters } from 'vuex'
 const paymentMethodStateOptions = [
   { key: 0, display_name: '在线支付' },
   { key: 1, display_name: '货到付款' }
+]
+const goodsSortStateOption = [
+  { key: 100, display_name: '食物' },
+  { key: 101, display_name: '衣物' },
+  { key: 102, display_name: '办公用品' },
+  { key: 103, display_name: '体育用品' }
 ]
 const orderStateOptions = [
   { key: 0, display_name: '未处理' },
@@ -254,6 +262,7 @@ export default {
       orderStateOptions,
       paymentMethodStateOptions,
       orderStateTypeKeyValue,
+      goodsSortStateOption,
       listQuery: {
         page: 1,
         limit: 20,
@@ -307,9 +316,13 @@ export default {
         marks: ''
       },
       rules: {
-        idLicense: [{ required: true, message: 'idLicense is required', trigger: 'change' }],
-        receiverName: [{ required: true, message: 'receiverName is required', trigger: 'blur' }],
-        receiverPhone: [{ required: true, message: 'receiverPhone is required', trigger: 'blur' }]
+        idLicense: [{ required: true, message: '车牌是必须的', trigger: 'change' }],
+        senderName: [{ required: true, message: '寄件人姓名必填', trigger: 'blur' }],
+        senderPhone: [{ required: true, message: '寄件人电话必填', trigger: 'blur' }, { type: 'number', message: '电话号码11位且是纯数字', trigger: 'blur' }],
+        receiverName: [{ required: true, message: '收件人姓名必填', trigger: 'blur' }],
+        receiverPhone: [{ required: true, message: '收件人电话必填', trigger: 'blur' }, { type: 'number', message: '电话号码11位且是纯数字', trigger: 'blur' }],
+        receiverAddress: [{ required: true, message: '收件人地址必填', trigger: 'blur' }],
+        countGoods: [{ type: 'number', required: false, message: '只能为数字', trigger: 'blur' }]
       },
       downloadLoading: false
     }
