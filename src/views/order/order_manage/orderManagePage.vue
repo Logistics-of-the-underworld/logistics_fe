@@ -289,7 +289,8 @@ export default {
         if (valid) {
           const tempData = Object.assign({}, this.temp)
           updateOrder({ order: tempData, heavy: this.tempGoods.heavy }).then(() => {
-            this.getList()
+            const index = this.list.findIndex(v => v.idOrder === tempData.idOrder)
+            this.list.splice(index, 1, tempData)
             this.dialogFormVisible = false
             this.$notify({
               title: 'Success',

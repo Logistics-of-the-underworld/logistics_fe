@@ -56,12 +56,6 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="运费">
-        <template slot-scope="{row}">
-          <span>{{ row.cost }}</span>
-        </template>
-      </el-table-column>
-
       <el-table-column align="center" label="操作" >
         <template slot-scope="{row,$index}">
           <el-button type="primary" size="mini" @click="handleUpdate(row)">
@@ -75,8 +69,8 @@
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
 
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="120px" style="width: 400px; margin-left:50px;">
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" width="600px">
+      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="120px" style=" margin-left:50px;">
         <el-form-item label="路线ID" prop="idLine">
           <el-input v-model="temp.idLine" :disabled="'update' === dialogStatus" />
         </el-form-item>
@@ -142,7 +136,7 @@ export default {
       // 临时窗口中的数据
       temp: {
         // 路线ID
-        idLline: undefined,
+        idLine: undefined,
         // 起点经度
         startLongitude: undefined,
         // 起点纬度
@@ -171,7 +165,7 @@ export default {
         idLine: [{ required: true, message: '路线ID是必须的', trigger: 'blur' }],
         driverName: [{ required: true, message: '司机是必须的', trigger: 'blur' }],
         startDistribution: [{ required: true, message: '起始站点ID是必须的', trigger: 'blur' }],
-        endDistribution: [{ required: true, message: '终点站点ID是必须的', trigger: 'blur' }],
+        endDistribution: [{ required: true, message: '终点站点ID是必须的', trigger: 'blur' }]
       }
     }
   },
@@ -244,10 +238,11 @@ export default {
     updateData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
+          console.log(this.list)
           const tempData = Object.assign({}, this.temp)
           updateRoute({ lineInfo: tempData }).then(() => {
-            const index = this.list.findIndex(v => v.idLline === this.temp.idLline)
-            this.list.splice(index, 1, this.temp)
+            const index = this.list.findIndex(v => v.idLine === tempData.idLine)
+            this.list.splice(index, 1, tempData)
             this.$notify({
               title: 'Success',
               message: '更新成功',
@@ -262,8 +257,8 @@ export default {
     handleDownload() {
       this.downloadLoading = true
       import('@/vendor/Export2Excel').then(excel => {
-        const tHeader = ['timestamp', 'title', 'type', 'importance', 'status']
-        const filterVal = ['timestamp', 'title', 'type', 'importance', 'status']
+        const tHeader = ['路线ID', '起始配送站点ID', '终点配送站点ID', '起点经度', '起点纬度', '终点经度', '终点纬度', '负责司机']
+        const filterVal = ['idLine', 'startDistribution', 'endDistribution', 'startLongitude', 'startLatitude', 'endLongitude', 'endLatitude', 'driverName']
         const data = this.formatJson(filterVal)
         excel.export_json_to_excel({
           header: tHeader,
