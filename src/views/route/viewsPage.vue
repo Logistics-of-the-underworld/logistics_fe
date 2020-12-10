@@ -197,7 +197,7 @@ export default {
     createData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          addRoute(this.temp).then(res => {
+          addRoute({ lineInfo: this.temp }).then(res => {
             this.list.unshift(this.temp)
             this.dialogFormVisible = false
             this.$notify({
