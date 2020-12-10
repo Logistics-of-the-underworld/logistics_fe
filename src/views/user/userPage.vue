@@ -140,7 +140,6 @@ export default {
   },
   created() {
     this.getList()
-    this.getRoleList()
   },
   methods: {
     handleFilter() {
@@ -148,24 +147,23 @@ export default {
       this.getList()
     },
     async getList() {
-      if (JSON.parse(this.$store.getters.roles)[0].toString() === 'admin') {
-        getAuth(this.listQuery.limit, this.listQuery.page).then(resp => {
-          this.list = resp.userList
-          this.total = resp.total
-        })
-      } else {
-        getAuthByOrg(this.$store.getters.organizationName, this.listQuery.limit, this.listQuery.page).then(resp => {
-          this.list = resp.userList
-          this.total = resp.total
-        })
-      }
       this.listLoading = true
-      this.listLoading = false
-    },
-    async getRoleList() {
-      getRoleByIdentity().then(resp => {
-        this.options = resp.role
-      })
+      if (JSON.parse(this.$store.getters.roles)[0].toString() === 'admin') {
+        await getAuth(this.listQuery.limit, this.listQuery.page).then(resp => {
+          this.list = resp.userList
+          this.total = resp.total
+        })
+        this.listLoading = false
+      } else {
+        await getAuthByOrg(this.$store.getters.organizationName, this.listQuery.limit, this.listQuery.page).then(resp => {
+          this.list = resp.userList
+          this.total = resp.total
+        })
+        await getRoleByIdentity().then(resp => {
+          this.options = resp.role
+        })
+        this.listLoading = false
+      }
     },
     deleteUser() {
       deleteAuth({ 'targetUsername': this.tempRow.username, 'note': this.reason }).then(resp => {

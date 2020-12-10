@@ -4,7 +4,7 @@
 
     <breadcrumb class="breadcrumb-container" />
     <div class="head-title">
-      <span>123</span>
+      <span id="title-span">欢迎使用TP物流</span>
     </div>
     <div class="right-menu">
       <el-dropdown class="avatar-container" trigger="click">
@@ -75,6 +75,16 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+  .head-title {
+    position: absolute;
+    right: 120px;
+    margin-top: 20px;
+  }
+  #title-span {
+    font: full-width;
+    font-size: larger;
+    line-height: 18px;
+  }
 .navbar {
   height: 50px;
   overflow: hidden;
@@ -97,10 +107,6 @@ export default {
 
   .breadcrumb-container {
     float: left;
-  }
-  .head-title {
-    position: absolute;
-    right: 120px;
   }
   .right-menu {
     float: right;

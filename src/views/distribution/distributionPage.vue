@@ -213,7 +213,6 @@ export default {
   },
   created() {
     this.getDistribution()
-    console.log(123)
   },
   methods: {
     EditTableColumn(row, column, cell, event) {
@@ -239,11 +238,13 @@ export default {
     async getDistribution() {
       this.loading = true
       let parmas
-      if (JSON.parse(this.roles)[1] === 'admin') {
+      const role = JSON.parse(this.roles)
+      if (role[1] === 'admin' || role[1] === 'worker') {
         parmas = this.$store.getters.organizationName
       }
       console.log(parmas)
       await fetchList(parmas || 'no').then(res => {
+        console.log(res)
         this.tableData = res.data
         this.tableData = this.tableData.map(v => {
           v.createTime = this.dayjs(v.createTime).format('YYYY-MM-DD')
