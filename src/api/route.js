@@ -18,9 +18,8 @@ export function addRoute(params) {
 
 export function deleteRoute(params) {
   return request({
-    url: '/route/deleteRoute',
-    method: 'get',
-    params: params
+    url: `/route/deleteRoute/${params}`,
+    method: 'get'
   })
 }
 
